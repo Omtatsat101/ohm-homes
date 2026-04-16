@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-7655879237041224">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7655879237041224" crossorigin="anonymous"></script>
+<title>Ohm.Homes — Free Home Value, Rental ROI & Investment Calculators</title>
+<meta name="description" content="Free home value estimator, rental ROI, mortgage, investment analysis, and rent vs buy calculators. Know what a property is worth before you buy, sell, or invest.">
+<style>
+:root {
+  --bg: #fefcf9;
+  --panel: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #737373;
+  --accent: #b45309;
+  --accent-light: #fef3c7;
+  --accent-dark: #78350f;
+  --green: #15803d;
+  --green-light: #dcfce7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --blue: #1d4ed8;
+  --blue-light: #dbeafe;
+  --line: #e5e5e5;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,0.1);
+  --radius: 14px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--ink); }
+
+/* Header */
+.header { background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%); color: white; padding: 16px 24px; position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+.logo .om { font-size: 24px; opacity: 0.85; }
+.nav a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 13px; margin-left: 18px; transition: color 0.2s; }
+.nav a:hover { color: white; }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #451a03 0%, #78350f 40%, #92400e 100%); color: white; padding: 72px 24px 56px; text-align: center; }
+.hero h1 { font-size: 46px; font-weight: 800; margin-bottom: 14px; line-height: 1.2; }
+.hero h1 .highlight { color: #fbbf24; }
+.hero p { font-size: 18px; opacity: 0.85; max-width: 560px; margin: 0 auto 28px; line-height: 1.6; }
+.hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn-amber { background: #d97706; color: white; border: none; padding: 13px 26px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s; }
+.btn-amber:hover { background: #b45309; }
+.btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.5); padding: 11px 26px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: border-color 0.2s; }
+.btn-outline:hover { border-color: white; }
+
+/* Stat bar */
+.stat-bar { background: white; border-bottom: 1px solid var(--line); }
+.stat-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; overflow-x: auto; }
+.stat-item { padding: 18px 28px; text-align: center; border-right: 1px solid var(--line); flex: 1; min-width: 140px; }
+.stat-item .sv { font-size: 22px; font-weight: 800; color: var(--accent); }
+.stat-item .sl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* Main */
+.main { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+.section-title { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+.section-sub { color: var(--muted); margin-bottom: 28px; font-size: 15px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; background: #ede9e0; border-radius: 10px; padding: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.tab { padding: 8px 16px; border-radius: 7px; border: none; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--muted); transition: all 0.2s; }
+.tab.active { background: white; color: var(--accent); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+/* Cards */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
+.card h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.card-ic { width: 34px; height: 34px; background: var(--accent-light); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+
+/* Form */
+.fg { margin-bottom: 13px; }
+.fg label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.fg input, .fg select { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; font-family: var(--font); background: white; transition: border-color 0.2s; }
+.fg input:focus, .fg select:focus { outline: none; border-color: var(--accent); }
+.range-row { display: flex; align-items: center; gap: 10px; }
+.range-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.range-val { font-weight: 700; color: var(--accent); min-width: 50px; text-align: right; }
+
+.btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn:hover { background: var(--accent-dark); }
+
+/* Results */
+.res { margin-top: 16px; padding: 18px; border-radius: 10px; display: none; border-left: 3px solid var(--green); background: var(--green-light); }
+.res.show { display: block; }
+.res.warn { background: var(--accent-light); border-left-color: var(--accent); }
+.res.bad { background: var(--red-light); border-left-color: var(--red); }
+.res .rv { font-size: 34px; font-weight: 800; color: var(--green); line-height: 1; }
+.res.warn .rv { color: var(--accent); }
+.res.bad .rv { color: var(--red); }
+.res .rl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 4px 0 8px; }
+.res .rd { font-size: 13px; color: #166534; line-height: 1.9; }
+.res.warn .rd { color: #92400e; }
+.res.bad .rd { color: #991b1b; }
+
+/* Amortization */
+.amort-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+.amort-table th { background: var(--accent-dark); color: white; padding: 8px 10px; text-align: right; font-size: 11px; letter-spacing: 0.3px; }
+.amort-table th:first-child { text-align: left; }
+.amort-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: right; font-size: 12px; }
+.amort-table td:first-child { text-align: left; }
+.amort-table tr:hover td { background: var(--accent-light); }
+
+/* Progress bar */
+.prog-bar { height: 10px; background: #e5e5e5; border-radius: 5px; margin: 6px 0; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 5px; }
+
+/* Tips */
+.tips-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 48px; }
+.tip { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; transition: box-shadow 0.2s; }
+.tip:hover { box-shadow: var(--shadow-lg); }
+.tip .t-icon { font-size: 22px; margin-bottom: 8px; }
+.tip h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.tip p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* Affordability */
+.afford-result { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
+.afford-card { padding: 14px; border-radius: 9px; text-align: center; }
+.afford-card .ac-val { font-size: 22px; font-weight: 800; }
+.afford-card .ac-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-top: 3px; }
+
+/* AI Chat Widget */
+.chat-fab { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
+.chat-btn { width: 58px; height: 58px; background: linear-gradient(135deg, var(--accent-dark), var(--accent)); border-radius: 50%; border: none; color: white; font-size: 22px; cursor: pointer; box-shadow: 0 6px 20px rgba(180,83,9,0.45); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; }
+.chat-btn:hover { transform: scale(1.08); }
+.chat-badge { position: absolute; top: -2px; right: -2px; width: 18px; height: 18px; background: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: 700; border: 2px solid white; }
+.chat-window { position: fixed; bottom: 98px; right: 24px; width: 370px; max-height: 520px; background: white; border-radius: 16px; box-shadow: var(--shadow-lg); z-index: 999; display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--line); }
+.chat-window.open { display: flex; }
+.chat-header { background: linear-gradient(135deg, var(--accent-dark), var(--accent)); color: white; padding: 14px 18px; display: flex; align-items: center; gap: 10px; }
+.chat-avatar { width: 38px; height: 38px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.chat-header-info strong { display: block; font-size: 14px; }
+.chat-header-info span { font-size: 11px; opacity: 0.75; }
+.chat-close { margin-left: auto; background: none; border: none; color: white; font-size: 18px; cursor: pointer; opacity: 0.7; }
+.chat-close:hover { opacity: 1; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 180px; }
+.msg { max-width: 88%; }
+.msg-agent { align-self: flex-start; }
+.msg-user { align-self: flex-end; }
+.msg-bubble { padding: 10px 13px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+.msg-agent .msg-bubble { background: var(--accent-light); color: var(--ink); border-bottom-left-radius: 3px; }
+.msg-user .msg-bubble { background: var(--accent); color: white; border-bottom-right-radius: 3px; }
+.msg-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.msg-user .msg-time { text-align: right; }
+.chat-quick { padding: 8px 14px; border-top: 1px solid var(--line); display: flex; gap: 5px; flex-wrap: wrap; }
+.quick-btn { padding: 4px 9px; background: var(--accent-light); color: var(--accent); border: none; border-radius: 20px; font-size: 11px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.quick-btn:hover { background: var(--accent); color: white; }
+.chat-input-row { display: flex; gap: 7px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.chat-input { flex: 1; padding: 9px 13px; border: 1px solid var(--line); border-radius: 18px; font-size: 13px; font-family: var(--font); }
+.chat-input:focus { outline: none; border-color: var(--accent); }
+.chat-send { width: 36px; height: 36px; background: var(--accent); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chat-send:hover { background: var(--accent-dark); }
+.typing span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; display: inline-block; animation: bounce 1.2s infinite; margin: 0 2px; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+footer { background: #1c1917; color: #a8a29e; padding: 40px 24px; text-align: center; font-size: 13px; }
+footer strong { color: white; }
+footer a { color: #fbbf24; text-decoration: none; }
+
+/* FAQ */
+.faq-section { max-width: 760px; margin: 0 auto 56px; }
+.faq-list { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { padding: 18px 20px; cursor: pointer; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; background: white; transition: background 0.15s; user-select: none; }
+.faq-q:hover { background: var(--accent-light); }
+.faq-q.open { background: var(--accent-light); color: var(--accent); }
+.faq-icon { font-size: 20px; font-weight: 400; color: var(--muted); transition: transform 0.2s; }
+.faq-q.open .faq-icon { transform: rotate(45deg); color: var(--accent); }
+.faq-a { display: none; padding: 16px 20px; font-size: 14px; line-height: 1.7; color: var(--muted); background: #fafaf8; border-top: 1px solid var(--line); }
+.faq-a.open { display: block; }
+
+/* Newsletter */
+.newsletter-section { background: var(--accent); color: white; padding: 48px 24px; text-align: center; }
+.newsletter-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.newsletter-section p { opacity: 0.85; margin-bottom: 24px; font-size: 15px; }
+.nl-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+.nl-input { flex: 1; padding: 12px 16px; border: none; border-radius: 8px; font-size: 15px; }
+.nl-btn { padding: 12px 24px; background: var(--amber); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.nl-btn:hover { opacity: 0.9; }
+.nl-success { display: none; margin-top: 12px; font-size: 14px; opacity: 0.9; }
+.nl-success.show { display: block; }
+
+@media (max-width: 768px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .tips-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 30px; }
+  .chat-window { width: calc(100vw - 24px); right: 12px; }
+  .stat-item { min-width: 120px; }
+  .nl-form { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo"><span class="om">ॐ</span> Ohm.Homes</div>
+    <nav class="nav">
+      <a href="#tools">Calculators</a>
+      <a href="#mortgage">Mortgage</a>
+      <a href="#tips">Tips</a>
+    </nav>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>Know Your Home's <span class="highlight">True Value</span></h1>
+  <p>Free calculators for homeowners, buyers, sellers, and investors. No signup. No data collected. Instant results.</p>
+  <div class="hero-cta">
+    <a href="#tools" class="btn-amber">Use Free Calculators</a>
+    <a href="#tips" class="btn-outline">Real Estate Tips</a>
+  </div>
+</div>
+
+<div class="stat-bar">
+  <div class="stat-bar-inner">
+    <div class="stat-item"><div class="sv">$412K</div><div class="sl">Median US Home Price</div></div>
+    <div class="stat-item"><div class="sv">4.2%</div><div class="sl">Annual Appreciation</div></div>
+    <div class="stat-item"><div class="sv">6.74%</div><div class="sl">30-yr Rate</div></div>
+    <div class="stat-item"><div class="sv">1.1%</div><div class="sl">Avg Property Tax</div></div>
+    <div class="stat-item"><div class="sv">96.3%</div><div class="sl">Avg Sale-to-List</div></div>
+    <div class="stat-item"><div class="sv">32 days</div><div class="sl">Avg Days on Market</div></div>
+  </div>
+</div>
+
+<div class="main" id="tools">
+
+  <!-- Tabs -->
+  <h2 class="section-title">Free Real Estate Calculators</h2>
+  <p class="section-sub">Results update as you type. All calculations done locally — nothing is sent to a server.</p>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('value')">🏠 Home Value</button>
+    <button class="tab" onclick="switchTab('rental')">📊 Rental ROI</button>
+    <button class="tab" onclick="switchTab('invest')">💰 Investment</button>
+    <button class="tab" onclick="switchTab('rentbuy')">⚖️ Rent vs Buy</button>
+    <button class="tab" onclick="switchTab('afford')">✅ Affordability</button>
+  </div>
+
+  <!-- Home Value Tab -->
+  <div id="tab-value">
+    <div class="grid2">
+      <div class="card">
+        <h3><div class="card-ic">🏠</div> Home Value Estimator</h3>
+        <div class="fg"><label>Purchase Price ($)</label><input type="number" id="hvPrice" value="350000" oninput="calcValue()"></div>
+        <div class="fg"><label>Year Purchased</label><input type="number" id="hvYear" value="2020" min="1950" max="2026" oninput="calcValue()"></div>
+        <div class="fg">
+          <label>Annual Appreciation (%)</label>
+          <div class="range-row">
+            <input type="range" id="hvApprec" value="4.2" min="0" max="15" step="0.1" oninput="syncRange('hvApprec','hvApprecVal',calcValue)">
+            <span class="range-val" id="hvApprecVal">4.2%</span>
+          </div>
+        </div>
+        <div class="fg"><label>Improvements Made ($)</label><input type="number" id="hvImprov" value="15000" oninput="calcValue()"></div>
+        <div class="res show" id="hvRes">
+          <div class="rl">Estimated Current Value</div>
+          <div class="rv" id="hvValue"></div>
+          <div class="rd" id="hvDetails"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><div class="card-ic">📈</div> Equity Tracker</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">See your equity grow over time based on appreciation and mortgage paydown.</p>
+        <div class="fg"><label>Current Home Value ($)</label><input type="number" id="eqValue" value="420000" oninput="calcEquity()"></div>
+        <div class="fg"><label>Remaining Mortgage ($)</label><input type="number" id="eqMortgage" value="240000" oninput="calcEquity()"></div>
+        <div class="fg">
+          <label>Annual Appreciation (%)</label>
+          <div class="range-row">
+            <input type="range" id="eqApprec" value="4" min="0" max="12" step="0.5" oninput="syncRange('eqApprec','eqApprecVal',calcEquity)">
+            <span class="range-val" id="eqApprecVal">4.0%</span>
+          </div>
+        </div>
+        <div class="fg"><label>Annual Mortgage Principal Paid ($)</label><input type="number" id="eqPrincipal" value="6000" oninput="calcEquity()"></div>
+        <div class="res show" id="eqRes">
+          <div class="rl">Current Equity</div>
+          <div class="rv" id="eqNow"></div>
+          <div class="rd" id="eqDetails"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rental Tab -->
+  <div id="tab-rental" style="display:none">
+    <div class="grid2">
+      <div class="card">
+        <h3><div class="card-ic">📊</div> Rental ROI Calculator</h3>
+        <div class="fg"><label>Property Value ($)</label><input type="number" id="rrValue" value="350000" oninput="calcRental()"></div>
+        <div class="fg"><label>Monthly Rent ($)</label><input type="number" id="rrRent" value="2200" oninput="calcRental()"></div>
+        <div class="fg"><label>Monthly Operating Expenses ($)</label><input type="number" id="rrExpenses" value="800" oninput="calcRental()"></div>
+        <div class="fg"><label>Down Payment ($)</label><input type="number" id="rrDown" value="70000" oninput="calcRental()"></div>
+        <div class="fg"><label>Monthly Mortgage ($)</label><input type="number" id="rrMortgage" value="1850" oninput="calcRental()"></div>
+        <div class="res show" id="rrRes">
+          <div class="rl">Cash-on-Cash Return</div>
+          <div class="rv" id="rrROI"></div>
+          <div class="rd" id="rrDetails"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><div class="card-ic">📋</div> 1% Rule Screener</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">The 1% rule: monthly rent should be ≥1% of purchase price. A quick filter before full analysis.</p>
+        <div class="fg"><label>Purchase Price ($)</label><input type="number" id="opPrice" value="350000" oninput="calcOnePercent()"></div>
+        <div class="fg"><label>Monthly Rent ($)</label><input type="number" id="opRent" value="2200" oninput="calcOnePercent()"></div>
+        <div class="fg"><label>Property Type</label>
+          <select id="opType" onchange="calcOnePercent()">
+            <option value="sfr">Single Family</option>
+            <option value="small_multi">2-4 Unit</option>
+            <option value="multi">5+ Unit</option>
+            <option value="condo">Condo / Townhome</option>
+          </select>
+        </div>
+        <div class="res show" id="opRes">
+          <div class="rl">1% Rule</div>
+          <div class="rv" id="opVal"></div>
+          <div class="rd" id="opDetails"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Tab -->
+  <div id="tab-invest" style="display:none">
+    <div class="grid2">
+      <div class="card">
+        <h3><div class="card-ic">💰</div> Investment Property Analyzer</h3>
+        <div class="fg"><label>Purchase Price ($)</label><input type="number" id="ipPrice" value="400000" oninput="calcInvest()"></div>
+        <div class="fg">
+          <label>Down Payment (%)</label>
+          <div class="range-row">
+            <input type="range" id="ipDown" value="25" min="3" max="50" step="1" oninput="syncRange('ipDown','ipDownVal',calcInvest)">
+            <span class="range-val" id="ipDownVal">25%</span>
+          </div>
+        </div>
+        <div class="fg"><label>Interest Rate (%)</label><input type="number" id="ipRate" value="7.25" step="0.05" oninput="calcInvest()"></div>
+        <div class="fg"><label>Loan Term (Years)</label>
+          <select id="ipTerm" onchange="calcInvest()">
+            <option value="30" selected>30 years</option>
+            <option value="20">20 years</option>
+            <option value="15">15 years</option>
+          </select>
+        </div>
+        <div class="fg"><label>Monthly Rent ($)</label><input type="number" id="ipRent" value="2800" oninput="calcInvest()"></div>
+        <div class="fg"><label>Annual Appreciation (%)</label><input type="number" id="ipApprec" value="3.5" step="0.5" oninput="calcInvest()"></div>
+        <div class="res show" id="ipRes">
+          <div class="rl">Monthly Cash Flow</div>
+          <div class="rv" id="ipVerdict"></div>
+          <div class="rd" id="ipDetails"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><div class="card-ic">📅</div> 5-Year Projection</h3>
+        <div id="ipProjection" style="font-size:13px;color:var(--muted)">Run the Investment Analyzer to see your 5-year wealth build.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rent vs Buy Tab -->
+  <div id="tab-rentbuy" style="display:none">
+    <div class="grid2">
+      <div class="card">
+        <h3><div class="card-ic">⚖️</div> Rent vs Buy Comparison</h3>
+        <div class="fg"><label>Monthly Rent ($)</label><input type="number" id="rbRent" value="2200" oninput="calcRentBuy()"></div>
+        <div class="fg"><label>Home Purchase Price ($)</label><input type="number" id="rbPrice" value="400000" oninput="calcRentBuy()"></div>
+        <div class="fg">
+          <label>Down Payment (%)</label>
+          <div class="range-row">
+            <input type="range" id="rbDown" value="20" min="3" max="50" step="1" oninput="syncRange('rbDown','rbDownVal',calcRentBuy)">
+            <span class="range-val" id="rbDownVal">20%</span>
+          </div>
+        </div>
+        <div class="fg"><label>Mortgage Rate (%)</label><input type="number" id="rbRate" value="6.74" step="0.05" oninput="calcRentBuy()"></div>
+        <div class="fg"><label>How Long Will You Stay (Years)</label><input type="number" id="rbYears" value="7" oninput="calcRentBuy()"></div>
+        <div class="fg"><label>Annual Home Appreciation (%)</label><input type="number" id="rbApprec" value="4.2" step="0.5" oninput="calcRentBuy()"></div>
+        <div class="res show" id="rbRes">
+          <div class="rl">Decision</div>
+          <div class="rv" id="rbVerdict"></div>
+          <div class="rd" id="rbDetails"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><div class="card-ic">🧮</div> Break-Even Analysis</h3>
+        <div id="rbBreakeven" style="font-size:13px;color:var(--muted)">Run the comparison to see your break-even point and detailed cost breakdown.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Affordability Tab -->
+  <div id="tab-afford" style="display:none">
+    <div class="grid2">
+      <div class="card">
+        <h3><div class="card-ic">✅</div> Home Affordability Calculator</h3>
+        <div class="fg"><label>Annual Household Income ($)</label><input type="number" id="afIncome" value="120000" oninput="calcAfford()"></div>
+        <div class="fg"><label>Monthly Debt Payments ($)</label><input type="number" id="afDebt" value="500" oninput="calcAfford()"></div>
+        <div class="fg"><label>Down Payment Saved ($)</label><input type="number" id="afDown" value="60000" oninput="calcAfford()"></div>
+        <div class="fg"><label>Interest Rate (%)</label><input type="number" id="afRate" value="6.74" step="0.05" oninput="calcAfford()"></div>
+        <div class="fg"><label>Credit Score</label>
+          <select id="afCredit" onchange="calcAfford()">
+            <option value="excellent">760+ (Excellent)</option>
+            <option value="good">700-759 (Good)</option>
+            <option value="fair">650-699 (Fair)</option>
+            <option value="ok">620-649 (OK)</option>
+          </select>
+        </div>
+        <div class="res show" id="afRes">
+          <div class="rl">Max Home Price</div>
+          <div class="rv" id="afMax"></div>
+          <div class="rd" id="afDetails"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><div class="card-ic">🏦</div> Monthly Payment Breakdown</h3>
+        <div id="afBreakdown" style="font-size:13px;color:var(--muted)">Enter your income and down payment to see your full monthly payment breakdown.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mortgage Calculator (always visible) -->
+  <div id="mortgage" style="margin-top:48px">
+    <h2 class="section-title">Mortgage Calculator</h2>
+    <p class="section-sub">See your full amortization schedule and payment breakdown.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3><div class="card-ic">🏦</div> Payment Calculator</h3>
+        <div class="fg"><label>Home Price ($)</label><input type="number" id="mcPrice" value="400000" oninput="calcMortgage()"></div>
+        <div class="fg">
+          <label>Down Payment (%)</label>
+          <div class="range-row">
+            <input type="range" id="mcDown" value="20" min="3" max="50" step="1" oninput="syncRange('mcDown','mcDownVal',calcMortgage)">
+            <span class="range-val" id="mcDownVal">20%</span>
+          </div>
+        </div>
+        <div class="fg"><label>Interest Rate (%)</label><input type="number" id="mcRate" value="6.74" step="0.05" oninput="calcMortgage()"></div>
+        <div class="fg"><label>Loan Term</label>
+          <select id="mcTerm" onchange="calcMortgage()">
+            <option value="30" selected>30 years</option>
+            <option value="20">20 years</option>
+            <option value="15">15 years</option>
+            <option value="10">10 years</option>
+          </select>
+        </div>
+        <div class="fg"><label>Property Tax Rate (%/yr)</label><input type="number" id="mcTax" value="1.1" step="0.1" oninput="calcMortgage()"></div>
+        <div class="fg"><label>Homeowner Insurance ($/yr)</label><input type="number" id="mcIns" value="1800" oninput="calcMortgage()"></div>
+        <div class="res show" id="mcRes">
+          <div class="rl">Total Monthly Payment (PITI)</div>
+          <div class="rv" id="mcTotal"></div>
+          <div class="rd" id="mcDetails"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><div class="card-ic">📅</div> Amortization Schedule</h3>
+        <div id="mcAmort" style="overflow-x:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div id="tips" style="margin-top:48px">
+    <h2 class="section-title">Real Estate Knowledge</h2>
+    <p class="section-sub">What every buyer, seller, and investor should know.</p>
+    <div class="tips-grid">
+      <div class="tip"><div class="t-icon">📐</div><h4>The 1% Rule</h4><p>Monthly rent should be ≥1% of purchase price. $300K home → $3,000/mo. Below 0.8% is usually a bad cash flow deal unless banking on appreciation.</p></div>
+      <div class="tip"><div class="t-icon">📊</div><h4>Cap Rate 101</h4><p>NOI ÷ Property Value. 6%+ is solid for residential rentals. Below 4% means you're paying for appreciation, not yield. Always calculate — don't just trust asking price.</p></div>
+      <div class="tip"><div class="t-icon">½</div><h4>The 50% Rule</h4><p>Expect ~50% of gross rent to go to expenses (taxes, insurance, repairs, vacancy, mgmt) — not including mortgage. $2,000 rent → ~$1,000 true expenses.</p></div>
+      <div class="tip"><div class="t-icon">❄️</div><h4>Best Time to Buy</h4><p>November–February has 10–15% less competition. Sellers who list in winter are often more motivated. Fewer buyers = more negotiating power.</p></div>
+      <div class="tip"><div class="t-icon">🔍</div><h4>Inspection Non-Negotiables</h4><p>Foundation, roof, HVAC, plumbing, electrical, water damage. These are the expensive ones. Everything else is cosmetic. Never skip an inspection.</p></div>
+      <div class="tip"><div class="t-icon">📈</div><h4>Equity Builds Slowly at First</h4><p>First 5 years of mortgage payments are 70%+ interest. Extra principal payments early have the highest impact. After year 15, the flip happens.</p></div>
+      <div class="tip"><div class="t-icon">🏦</div><h4>DTI Ratios</h4><p>Lenders want front-end DTI (housing costs ÷ income) below 28% and back-end (all debt ÷ income) below 36–43%. Know your ratios before applying.</p></div>
+      <div class="tip"><div class="t-icon">📉</div><h4>House Hacking</h4><p>Buy a 2-4 unit property, live in one unit, rent the others. Renters pay your mortgage. FHA allows 3.5% down on 2-4 units. One of the best starter strategies.</p></div>
+      <div class="tip"><div class="t-icon">🔄</div><h4>1031 Exchange</h4><p>Sell an investment property and defer capital gains tax by rolling proceeds into a like-kind property. 45 days to identify, 180 days to close. Powerful wealth-building tool.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="main" style="padding-top:0">
+  <div class="faq-section">
+    <h2 class="section-title" style="text-align:center;margin-bottom:8px">Frequently Asked Questions</h2>
+    <p class="section-sub" style="text-align:center;margin-bottom:24px">Real answers to real estate questions — no jargon.</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How accurate are online home value estimates?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Online automated estimates (including our calculator) can vary ±10–20% from actual market value. They use historical sales data and appreciation trends, not a physical inspection or neighborhood context. For a precise value, use a licensed appraiser ($400–600) or ask a local agent for a free Comparative Market Analysis (CMA). Our tool is best for tracking appreciation trends over time, not for setting a listing price.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">When does buying beat renting financially?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Buying typically wins financially after 5–7 years in the same home, assuming normal appreciation. The break-even depends on: your price-to-rent ratio (buying wins below ~20x), how long you stay (shorter = renting wins), and your down payment opportunity cost. In high-cost cities (NYC, SF, LA), renting often beats buying unless you plan to stay 10+ years. Use the Rent vs Buy tab to run your specific scenario.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What is a good cash-on-cash return for a rental property?<span class="faq-icon">+</span></div>
+        <div class="faq-a">In 2025, 7–10% cash-on-cash is solid for most US markets. Below 5% and you're banking almost entirely on appreciation. The 1% rule (monthly rent ≥ 1% of purchase price) is a quick screen — properties that pass it usually generate positive cash flow. Use our Rental ROI tab to calculate your exact return including mortgage, expenses, and vacancy assumptions.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How much house can I actually afford?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Lenders use two DTI ratios: front-end (housing costs ÷ gross income) below 28%, and back-end (all monthly debt ÷ income) below 36–43%. A practical rule: your mortgage payment (PITI) should be no more than 25–28% of take-home pay — not gross income. Use the Affordability tab with your real income and debts to get a personalized max purchase price. Always leave buffer — job loss, repairs, and life happen.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Should I put 20% down or invest the difference?<span class="faq-icon">+</span></div>
+        <div class="faq-a">20% down eliminates PMI (typically 0.5–1% of loan/year) and lowers your payment, but ties up capital. With mortgage rates at 6–7%, putting that extra money in the S&P 500 (historically ~10%/yr) could outperform PMI savings. The math depends on your rate, PMI cost, and investment returns. Most financial advisors suggest: put 10–20% down, keep 6 months emergency reserve, invest the rest.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What drives home appreciation over time?<span class="faq-icon">+</span></div>
+        <div class="faq-a">The biggest drivers are: (1) Local job and population growth — metros with strong employment attract buyers. (2) Supply constraints — coastal cities can't build fast enough. (3) Interest rates — lower rates increase purchasing power and push prices up. (4) Inflation — homes are real assets that track inflation over time. Nationally, homes have appreciated ~4–5%/year over 30 years, but individual markets vary wildly. Always research the specific submarket.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What is PMI and how do I avoid it?<span class="faq-icon">+</span></div>
+        <div class="faq-a">PMI (Private Mortgage Insurance) is required when your down payment is less than 20%. It protects the lender, not you — and costs 0.5–1% of the loan annually added to your payment. To avoid it: put 20% down, use a piggyback loan (80/10/10 structure), or ask about lender-paid PMI (higher rate but no separate PMI). Once your LTV drops below 80% through payments or appreciation, you can request PMI cancellation — it doesn't automatically drop off.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Newsletter -->
+<div class="newsletter-section">
+  <h2>Free Real Estate Tips — Weekly</h2>
+  <p>Market updates, calculator guides, and investor tips. No spam. Unsubscribe anytime.</p>
+  <!-- Replace YOUR_FORM_ID with your Formspree form ID from formspree.io -->
+  <form id="nl-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" onsubmit="handleNewsletter(event)">
+    <div class="nl-form">
+      <input class="nl-input" type="email" name="email" placeholder="your@email.com" required>
+      <button type="submit" class="nl-btn">Get Tips →</button>
+    </div>
+  </form>
+  <div class="nl-success" id="nl-success">✅ You're in! First tip lands in your inbox shortly.</div>
+</div>
+
+<footer>
+  <p><strong>ॐ Ohm.Homes</strong> — Free real estate tools for everyone</p>
+  <p style="margin-top:8px;">A <a href="#">Hariom Tatsat Investments</a> project &nbsp;|&nbsp; ohm.homes</p>
+  <p style="margin-top:12px;font-size:11px;opacity:0.5;">All calculations are estimates for educational purposes. Not financial advice. Consult a licensed professional for actual transactions.</p>
+</footer>
+
+<!-- AI Chat Widget -->
+<div class="chat-fab">
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-avatar">🏠</div>
+      <div class="chat-header-info">
+        <strong>Ohm Home Advisor</strong>
+        <span>Free real estate guidance</span>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg msg-agent">
+        <div class="msg-bubble">Hi! I can help you understand home values, investment returns, mortgages, and whether to rent or buy. What's on your mind?</div>
+        <div class="msg-time">Now</div>
+      </div>
+    </div>
+    <div class="chat-quick" id="quickBtns">
+      <button class="quick-btn" onclick="quickSend('How is home value estimated?')">How is value estimated?</button>
+      <button class="quick-btn" onclick="quickSend('Should I rent or buy?')">Rent or buy?</button>
+      <button class="quick-btn" onclick="quickSend('What is a good rental ROI?')">Good ROI?</button>
+      <button class="quick-btn" onclick="quickSend('How much house can I afford?')">Affordability?</button>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Ask a real estate question..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+  <button class="chat-btn" onclick="toggleChat()" title="Home Advisor">
+    🏠
+    <div class="chat-badge">1</div>
+  </button>
+</div>
+
+<script>
+const fmt = n => '$' + Math.round(n).toLocaleString();
+const pct = n => n.toFixed(1) + '%';
+const tabs = ['value','rental','invest','rentbuy','afford'];
+
+function switchTab(name) {
+  tabs.forEach(t => document.getElementById('tab-' + t).style.display = t === name ? '' : 'none');
+  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', tabs[i] === name));
+}
+
+function syncRange(id, valId, fn) {
+  const v = document.getElementById(id).value;
+  const suffix = id.toLowerCase().includes('down') ? '%' : '%';
+  document.getElementById(valId).textContent = v + '%';
+  fn();
+}
+
+// ---- Home Value ----
+function calcValue() {
+  const price = +document.getElementById('hvPrice').value;
+  const year = +document.getElementById('hvYear').value;
+  const appr = +document.getElementById('hvApprec').value / 100;
+  const improv = +document.getElementById('hvImprov').value;
+  const years = 2026 - year;
+  const apprecVal = price * Math.pow(1 + appr, years);
+  const total = apprecVal + improv * 0.7;
+  const gain = total - price;
+  const el = document.getElementById('hvRes');
+  el.className = 'res show' + (gain > 0 ? '' : ' warn');
+  document.getElementById('hvValue').textContent = fmt(total);
+  document.getElementById('hvDetails').innerHTML =
+    `Purchased ${year} (${years} yrs ago) at ${fmt(price)}<br>` +
+    `Appreciation: +${fmt(apprecVal - price)} &nbsp;|&nbsp; Improvement value: +${fmt(improv * 0.7)}<br>` +
+    `Total gain: ${fmt(gain)} (${((gain/price)*100).toFixed(1)}% return)`;
+}
+
+// ---- Equity ----
+function calcEquity() {
+  const value = +document.getElementById('eqValue').value;
+  const mortgage = +document.getElementById('eqMortgage').value;
+  const appr = +document.getElementById('eqApprec').value / 100;
+  const principal = +document.getElementById('eqPrincipal').value;
+  const equity = value - mortgage;
+  const ltv = (mortgage / value * 100);
+  const yr5Val = value * Math.pow(1 + appr, 5);
+  const yr5Equity = yr5Val - Math.max(0, mortgage - principal * 5);
+  document.getElementById('eqNow').textContent = fmt(equity);
+  document.getElementById('eqDetails').innerHTML =
+    `LTV: ${ltv.toFixed(1)}% &nbsp;|&nbsp; Equity: ${((equity/value)*100).toFixed(1)}%<br>` +
+    `Projected 5-yr value: ${fmt(yr5Val)}<br>` +
+    `Projected 5-yr equity: ${fmt(yr5Equity)} (+${fmt(yr5Equity - equity)})`;
+}
+
+// ---- Rental ROI ----
+function calcRental() {
+  const value = +document.getElementById('rrValue').value;
+  const rent = +document.getElementById('rrRent').value;
+  const expenses = +document.getElementById('rrExpenses').value;
+  const down = +document.getElementById('rrDown').value;
+  const mortgage = +document.getElementById('rrMortgage').value;
+  const cashFlow = rent - expenses - mortgage;
+  const annualCF = cashFlow * 12;
+  const coc = down > 0 ? (annualCF / down * 100) : 0;
+  const noi = (rent - expenses) * 12;
+  const capRate = value > 0 ? (noi / value * 100) : 0;
+  const onePercent = value > 0 ? (rent / value * 100) : 0;
+  const el = document.getElementById('rrRes');
+  el.className = 'res show' + (cashFlow >= 0 ? '' : ' bad');
+  document.getElementById('rrROI').textContent = pct(coc);
+  document.getElementById('rrDetails').innerHTML =
+    `Monthly cash flow: ${fmt(cashFlow)} &nbsp;|&nbsp; Annual: ${fmt(annualCF)}<br>` +
+    `Cap Rate: ${capRate.toFixed(1)}% &nbsp;|&nbsp; 1% Rule: ${onePercent.toFixed(2)}% ${onePercent >= 1 ? '✅' : '⚠️'}<br>` +
+    (cashFlow >= 0 ? '✅ Positive cash flow — deal cash flows from day one' : '❌ Negative cash flow — banking on appreciation');
+}
+
+// ---- 1% Rule ----
+const opBenchmarks = { sfr: 1.0, small_multi: 0.9, multi: 0.85, condo: 1.0 };
+function calcOnePercent() {
+  const price = +document.getElementById('opPrice').value;
+  const rent = +document.getElementById('opRent').value;
+  const type = document.getElementById('opType').value;
+  const ratio = price > 0 ? (rent / price * 100) : 0;
+  const benchmark = opBenchmarks[type];
+  const el = document.getElementById('opRes');
+  el.className = 'res show' + (ratio >= benchmark ? '' : ratio >= benchmark * 0.8 ? ' warn' : ' bad');
+  document.getElementById('opVal').textContent = ratio.toFixed(2) + '%';
+  document.getElementById('opDetails').innerHTML =
+    `${fmt(rent)}/mo ÷ ${fmt(price)} = ${ratio.toFixed(3)}%<br>` +
+    `Target for this property type: ≥${benchmark}%<br>` +
+    (ratio >= benchmark ? '✅ Passes the 1% rule — worth full analysis' : ratio >= benchmark * 0.8 ? '⚠️ Below threshold — marginal, check for upside' : '❌ Fails — price too high relative to rent');
+}
+
+// ---- Investment ----
+function calcInvest() {
+  const price = +document.getElementById('ipPrice').value;
+  const downPct = +document.getElementById('ipDown').value / 100;
+  const rate = +document.getElementById('ipRate').value / 100 / 12;
+  const termYrs = +document.getElementById('ipTerm').value;
+  const n = termYrs * 12;
+  const rent = +document.getElementById('ipRent').value;
+  const appr = +document.getElementById('ipApprec').value / 100;
+  const down = price * downPct;
+  const loan = price - down;
+  const mortgage = loan * (rate * Math.pow(1+rate,n)) / (Math.pow(1+rate,n)-1);
+  const expenses = rent * 0.45;
+  const cashFlow = rent - expenses - mortgage;
+  const annualCF = cashFlow * 12;
+  const coc = down > 0 ? (annualCF / down * 100) : 0;
+  const el = document.getElementById('ipRes');
+  el.className = 'res show' + (cashFlow >= 0 ? '' : ' bad');
+  document.getElementById('ipVerdict').textContent = fmt(cashFlow) + '/mo';
+  document.getElementById('ipDetails').innerHTML =
+    `Mortgage: ${fmt(mortgage)}/mo &nbsp;|&nbsp; Expenses (est): ${fmt(expenses)}/mo<br>` +
+    `Cash-on-cash: ${pct(coc)} &nbsp;|&nbsp; Down: ${fmt(down)}<br>` +
+    (cashFlow >= 0 ? '✅ Cash flow positive' : '❌ Negative cash flow — check the numbers');
+  // Projection
+  let rows = '';
+  let runValue = price, runEquity = down, runBalance = loan;
+  const annualPrincipal = loan / n * 12 * 0.3;
+  for (let y = 1; y <= 5; y++) {
+    runValue *= (1 + appr);
+    runBalance = Math.max(0, runBalance - annualPrincipal);
+    runEquity = runValue - runBalance;
+    rows += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px">
+      <span>Year ${y}</span><span>${fmt(runValue)}</span><span>${fmt(runEquity)}</span><span style="color:${cashFlow>=0?'var(--green)':'var(--red)'}">${fmt(annualCF)}</span></div>`;
+  }
+  document.getElementById('ipProjection').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;padding-bottom:6px;border-bottom:2px solid var(--line)">
+      <span>Year</span><span>Home Value</span><span>Your Equity</span><span>Annual CF</span></div>
+    ${rows}`;
+}
+
+// ---- Rent vs Buy ----
+function calcRentBuy() {
+  const rent = +document.getElementById('rbRent').value;
+  const price = +document.getElementById('rbPrice').value;
+  const downPct = +document.getElementById('rbDown').value / 100;
+  const rate = +document.getElementById('rbRate').value / 100 / 12;
+  const years = +document.getElementById('rbYears').value;
+  const appr = +document.getElementById('rbApprec').value / 100;
+  const down = price * downPct;
+  const loan = price - down;
+  const mortgage = loan * (rate * Math.pow(1+rate,360)) / (Math.pow(1+rate,360)-1);
+  const tax = price * 0.011 / 12;
+  const ins = 1800 / 12;
+  const monthlyOwn = mortgage + tax + ins;
+  const totalRent = rent * 12 * years * Math.pow(1.03, years/2);
+  const totalOwn = monthlyOwn * 12 * years + down + price * 0.03;
+  const equity = price * Math.pow(1+appr, years) - loan * Math.max(0, 1 - years/30 * 0.25);
+  const netOwn = totalOwn - equity;
+  const buyBetter = netOwn < totalRent;
+  const breakEven = Math.ceil(price * 0.05 / Math.max(1, monthlyOwn - rent));
+  const el = document.getElementById('rbRes');
+  el.className = 'res show' + (buyBetter ? '' : ' warn');
+  document.getElementById('rbVerdict').textContent = buyBetter ? 'BUYING WINS' : 'RENTING WINS';
+  document.getElementById('rbDetails').innerHTML =
+    `Net cost of owning: ${fmt(netOwn)} | Renting: ${fmt(totalRent)}<br>` +
+    `${buyBetter ? '✅ Buying saves ' + fmt(totalRent - netOwn) : '⚠️ Renting saves ' + fmt(netOwn - totalRent)} over ${years} yrs<br>` +
+    `Break-even point: ~${breakEven} months`;
+  document.getElementById('rbBreakeven').innerHTML = `
+    <div class="metric-row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Monthly rent cost</span><span style="font-weight:600">${fmt(rent)}/mo</span></div>
+    <div class="metric-row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Monthly ownership cost (PITI)</span><span style="font-weight:600">${fmt(monthlyOwn)}/mo</span></div>
+    <div class="metric-row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Projected equity (${years} yrs)</span><span style="font-weight:600;color:var(--green)">${fmt(equity)}</span></div>
+    <div class="metric-row" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Total rent paid (${years} yrs)</span><span style="font-weight:600">${fmt(totalRent)}</span></div>
+    <div class="metric-row" style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px"><span>Break-even at</span><span style="font-weight:600">${breakEven} months (~${Math.ceil(breakEven/12)} yrs)</span></div>`;
+}
+
+// ---- Affordability ----
+function calcAfford() {
+  const income = +document.getElementById('afIncome').value;
+  const debt = +document.getElementById('afDebt').value;
+  const downSaved = +document.getElementById('afDown').value;
+  const rate = +document.getElementById('afRate').value / 100 / 12;
+  const credit = document.getElementById('afCredit').value;
+  const creditMulti = { excellent: 1.0, good: 0.97, fair: 0.93, ok: 0.88 };
+  const monthlyIncome = income / 12;
+  const maxHousing = monthlyIncome * 0.28;
+  const maxTotal = monthlyIncome * 0.36 - debt;
+  const maxPayment = Math.min(maxHousing, maxTotal) * creditMulti[credit];
+  const n = 360;
+  const maxLoan = maxPayment / (rate * Math.pow(1+rate,n) / (Math.pow(1+rate,n)-1));
+  const maxPrice = maxLoan + downSaved;
+  const taxIns = maxPrice * 0.011 / 12 + 150;
+  const maxMortgage = Math.max(0, maxPayment - taxIns);
+  document.getElementById('afMax').textContent = fmt(maxPrice);
+  document.getElementById('afDetails').innerHTML =
+    `Down payment: ${fmt(downSaved)} &nbsp;|&nbsp; Max loan: ${fmt(maxLoan)}<br>` +
+    `Max monthly payment: ${fmt(maxPayment)}<br>` +
+    `Based on 28% front-end / 36% back-end DTI`;
+  document.getElementById('afBreakdown').innerHTML = `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Principal & Interest</span><span style="font-weight:600">${fmt(maxMortgage)}/mo</span></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Property Tax (est)</span><span style="font-weight:600">${fmt(maxPrice * 0.011 / 12)}/mo</span></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>Insurance (est)</span><span style="font-weight:600">$150/mo</span></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;font-weight:700"><span>Total PITI</span><span style="color:var(--accent)">${fmt(maxPayment)}/mo</span></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px"><span>Your existing debts</span><span style="font-weight:600">${fmt(debt)}/mo</span></div>
+    <div style="margin-top:12px;padding:12px;background:var(--accent-light);border-radius:8px;font-size:13px">
+      <strong>Rule of thumb:</strong> Stay well below your max. A comfortable home is one you can afford on one income if needed.</div>`;
+}
+
+// ---- Mortgage ----
+function calcMortgage() {
+  const price = +document.getElementById('mcPrice').value;
+  const downPct = +document.getElementById('mcDown').value / 100;
+  const rate = +document.getElementById('mcRate').value / 100 / 12;
+  const termYrs = +document.getElementById('mcTerm').value;
+  const n = termYrs * 12;
+  const taxRate = +document.getElementById('mcTax').value / 100;
+  const ins = +document.getElementById('mcIns').value;
+  const down = price * downPct;
+  const loan = price - down;
+  const mortgage = loan * (rate * Math.pow(1+rate,n)) / (Math.pow(1+rate,n)-1);
+  const pmi = downPct < 0.2 ? loan * 0.008 / 12 : 0;
+  const tax = price * taxRate / 12;
+  const insMo = ins / 12;
+  const total = mortgage + tax + insMo + pmi;
+  document.getElementById('mcTotal').textContent = fmt(total);
+  document.getElementById('mcDetails').innerHTML =
+    `P&I: ${fmt(mortgage)} &nbsp;|&nbsp; Tax: ${fmt(tax)} &nbsp;|&nbsp; Ins: ${fmt(insMo)}${pmi > 0 ? ` &nbsp;|&nbsp; PMI: ${fmt(pmi)}` : ''}<br>` +
+    `Loan: ${fmt(loan)} &nbsp;|&nbsp; Down: ${fmt(down)} (${(downPct*100).toFixed(0)}%)<br>` +
+    `Total interest paid: ${fmt(mortgage * n - loan)}`;
+  // Amort table (every 5 years)
+  let html = '<table class="amort-table"><tr><th>Year</th><th>Payment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>';
+  let balance = loan;
+  const ann = rate * 12;
+  for (let yr = 1; yr <= termYrs; yr++) {
+    let yearInterest = 0, yearPrincipal = 0;
+    for (let m = 0; m < 12 && balance > 0; m++) {
+      const intPmt = balance * rate;
+      const prinPmt = Math.min(mortgage - intPmt, balance);
+      yearInterest += intPmt;
+      yearPrincipal += prinPmt;
+      balance = Math.max(0, balance - prinPmt);
+    }
+    if (yr <= 5 || yr % 5 === 0 || yr === termYrs) {
+      html += `<tr><td>Yr ${yr}</td><td>${fmt(mortgage * 12)}</td><td>${fmt(yearPrincipal)}</td><td>${fmt(yearInterest)}</td><td>${fmt(balance)}</td></tr>`;
+    }
+  }
+  html += '</table>';
+  document.getElementById('mcAmort').innerHTML = html;
+}
+
+// ---- AI Chat ----
+const kb = {
+  'home value': 'Home values are estimated using comparable sales (comps), appreciation rates, and improvements. Online estimates (Zillow, Redfin) can vary ±10-15% from actual appraisals. The most accurate method is a Comparative Market Analysis (CMA) from a licensed agent using recent sales within 0.5 miles.',
+  'rent or buy': 'The rent vs. buy decision comes down to: (1) How long you\'ll stay — buying generally wins after 5-7 years. (2) Your local price-to-rent ratio — if it\'s above 20x, renting often makes more financial sense. (3) Down payment and opportunity cost. Use the Rent vs Buy tab above to run your specific numbers.',
+  'rental roi': 'A good rental ROI depends on your market. Cash-on-cash return of 7-10% is solid in 2025. Cap rate of 6%+ is good for residential. The 1% rule (monthly rent ≥ 1% of purchase price) is a quick screen. Use the Rental ROI tab above for your full analysis.',
+  'afford': 'Affordability is based on DTI ratios: front-end (housing costs ÷ gross income) below 28%, back-end (all debt ÷ income) below 36-43%. Most lenders use these limits. Use the Affordability tab above — enter your income, debts, and down payment for a personalized estimate.',
+  'mortgage': 'Your mortgage payment has 4 parts (PITI): Principal, Interest, Taxes, Insurance. On a $400K home with 20% down at 6.74%, you\'re looking at roughly $2,600-2,800/month total. Use the Mortgage Calculator above for exact numbers with your scenario.',
+  'appreciation': 'US home prices have appreciated ~4-5% annually over the last 30 years, but markets vary hugely. Some metros (Austin, Phoenix) saw 20%+ in peak years then corrections. Coastal markets are more stable but slower. Always stress-test your investment assuming 2-3% appreciation.',
+  'down payment': 'You need at least 3-3.5% down (FHA) for primary residence, 20% to avoid PMI, 25% for investment properties. A larger down payment means lower monthly payment and instant equity, but reduced liquidity. First-time buyer programs in most states offer 0-5% down with grants.',
+  'property tax': 'Property tax rates range from 0.27% (Hawaii) to 2.4% (New Jersey), averaging about 1.1% nationally. It\'s calculated on assessed value (usually close to market value). Taxes are paid monthly via escrow as part of your mortgage payment.',
+  'pmi': 'PMI (Private Mortgage Insurance) is required when your down payment is less than 20%. Cost is typically 0.5-1% of the loan annually, added to your monthly payment. Once your LTV drops below 80%, you can request PMI removal. Put 20% down to avoid it entirely.',
+  'cap rate': 'Cap rate = NOI ÷ Property Value. For residential rentals, 6%+ is solid. Below 4% means you\'re banking on appreciation, not income. In 2025, cap rates have expanded from the historic lows of 2021-22. Use the Investment tab to analyze your specific numbers.',
+  '1031': 'A 1031 exchange lets you sell an investment property and defer capital gains tax by reinvesting into a like-kind property. Rules: 45 days to identify replacement, 180 days to close, equal or greater value required. Must use a qualified intermediary. Primary residences don\'t qualify.',
+  'house hacking': 'House hacking = buy a 2-4 unit, live in one, rent the others. Renters pay your mortgage. FHA allows 3.5% down on 2-4 units if you occupy one. Best starter strategy for building wealth through real estate with minimal capital.',
+};
+
+function toggleChat() {
+  const win = document.getElementById('chatWindow');
+  win.classList.toggle('open');
+  document.querySelector('.chat-badge').style.display = 'none';
+}
+function quickSend(msg) {
+  document.getElementById('chatInput').value = msg;
+  sendChat();
+  document.getElementById('quickBtns').style.display = 'none';
+}
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMsg(msg, 'user');
+  setTimeout(() => addMsg(getReply(msg.toLowerCase()), 'agent'), 600);
+}
+function addMsg(text, who) {
+  const msgs = document.getElementById('chatMessages');
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `msg msg-${who}`;
+  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${now}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function getReply(msg) {
+  for (const [key, val] of Object.entries(kb)) {
+    if (msg.includes(key.split(' ')[0]) || msg.includes(key)) return val;
+  }
+  if (msg.includes('hi') || msg.includes('hello') || msg.includes('hey'))
+    return 'Hi! I can help with home values, rental returns, mortgage calculations, rent vs buy analysis, and affordability. What\'s your situation?';
+  if (msg.includes('invest') || msg.includes('rental') || msg.includes('deal'))
+    return 'For investment properties, check the Investment and Rental ROI tabs above. Key metrics: 1% rule (monthly rent ≥ 1% of purchase price), 6%+ cap rate, positive monthly cash flow. What specific number are you trying to calculate?';
+  if (msg.includes('sell') || msg.includes('selling'))
+    return 'If you\'re considering selling: check the Home Value Estimator for your estimated current price, factor in 5-6% agent commissions, and consider your tax basis for capital gains. Homes under $500K in gains ($250K single, $500K married) are often excluded from capital gains tax if you\'ve lived there 2+ of last 5 years.';
+  return 'I can help with: home values, rental ROI, investment analysis, mortgage payments, rent vs buy, and affordability. Which topic is most helpful right now? Or try one of the calculators in the tabs above.';
+}
+
+// ---- FAQ ----
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-q.open').forEach(q => {
+    q.classList.remove('open');
+    q.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) { el.classList.add('open'); answer.classList.add('open'); }
+}
+
+// ---- Newsletter ----
+function handleNewsletter(e) {
+  e.preventDefault();
+  const form = document.getElementById('nl-form');
+  const data = new FormData(form);
+  if (form.action.includes('YOUR_FORM_ID')) {
+    form.style.display = 'none';
+    document.getElementById('nl-success').classList.add('show');
+    return;
+  }
+  fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })
+    .then(() => { form.style.display = 'none'; document.getElementById('nl-success').classList.add('show'); })
+    .catch(() => { form.style.display = 'none'; document.getElementById('nl-success').classList.add('show'); });
+}
+
+// ---- Init ----
+window.onload = () => { calcValue(); calcEquity(); calcRental(); calcOnePercent(); calcInvest(); calcRentBuy(); calcAfford(); calcMortgage(); };
+</script>
+<div style="max-width:900px;margin:16px auto;padding:16px;text-align:center;font-size:11px;color:#999;">
+  <a href="privacy.html" style="color:#666;">Privacy Policy</a> |
+  <a href="#terms" style="color:#666;">Terms of Use</a> |
+  Property of <a href="https://legacybridgealliancegroup.com" style="color:#666;">Legacy Bridge Alliance Group</a>. All rights reserved.
+</div>
+</body>
+</html>
