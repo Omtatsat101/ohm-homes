@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>ohm.homes · Internal Command Center</title>
+  <style>
+    :root { color-scheme: dark; --bg:#07080c; --fg:#e9eef7; --mute:#8b95a8;
+            --line:#1a2030; --accent:#7c5cff; --accent2:#22d3ee; --pad:14px; }
+    *{ box-sizing:border-box }
+    html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
+               font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+    main{ max-width:880px; margin:0 auto; padding:48px 22px 80px; }
+    header{ display:flex; align-items:center; gap:14px; margin-bottom:28px; }
+    .logo{ width:42px; height:42px; border-radius:11px;
+           background:linear-gradient(135deg,var(--accent),var(--accent2));
+           display:grid; place-items:center; font-weight:700; color:#0a0a14; }
+    h1{ font-size:22px; margin:0; letter-spacing:-0.01em; }
+    h1 small{ font-weight:400; color:var(--mute); margin-left:8px; font-size:13px; }
+    .grid{ display:grid; gap:14px; grid-template-columns:1fr 1fr; }
+    @media (max-width:640px){ .grid{ grid-template-columns:1fr; } }
+    .card{ background:#0d1119; border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+    .card h2{ font-size:13px; text-transform:uppercase; letter-spacing:.06em;
+              color:var(--mute); margin:0 0 8px 0; font-weight:600; }
+    .card .v{ font-size:24px; font-weight:600; }
+    .card .v.ok{ color:#34d399 } .card .v.warn{ color:#fbbf24 } .card .v.err{ color:#f87171 }
+    .card .meta{ color:var(--mute); font-size:12px; margin-top:6px; }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; }
+    .pill{ background:rgba(124,92,255,.12); border:1px solid rgba(124,92,255,.35);
+           color:#bda9ff; padding:4px 10px; border-radius:999px; font-size:12px; }
+    code{ background:#11151f; padding:2px 6px; border-radius:5px; font-size:12px; color:#cbd5e1; }
+    a{ color:var(--accent2); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    .footer{ color:var(--mute); font-size:12px; margin-top:28px; }
+    .label{ color:var(--mute); font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="logo">ॐ</div>
+    <div>
+      <h1>ohm.homes <small>internal command center · v0.0.1</small></h1>
+      <div class="row" style="margin-top:6px">
+        <span class="pill">private</span>
+        <span class="pill">cloudflare workers</span>
+        <span class="pill">make mcp wired</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Worker health</h2>
+      <div class="v" id="health">…</div>
+      <div class="meta">/api/health</div>
+    </div>
+    <div class="card">
+      <h2>Bindings</h2>
+      <div class="v" id="bindings">…</div>
+      <div class="meta">/api/version</div>
+    </div>
+    <div class="card" style="grid-column: 1 / -1">
+      <h2>Make MCP toolbox</h2>
+      <div class="v" id="mcp">…</div>
+      <div class="meta">Server <code>519c6b0b-…</code> · region us2 · "Kiddie Brand Toolbox"</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Quick links</h2>
+    <ul style="margin:6px 0 0 0; padding-left:18px;">
+      <li><a href="/api/health">/api/health</a> — liveness</li>
+      <li><a href="/api/version">/api/version</a> — bindings + build info</li>
+      <li><a href="/api/mcp/status">/api/mcp/status</a> — Make toolbox probe</li>
+    </ul>
+    <div class="meta" style="margin-top:10px">
+      Full dashboard lives at <code>projects/dashboard/index.html</code>.
+      Will be embedded here once D1 is wired and KPIs become live data.
+    </div>
+  </div>
+
+  <p class="footer">
+    Internal use only. Per <code>memory/project_ohm_homes.md</code>: do not expose
+    internal AI tools or relationship/subscription data publicly on this domain.
+  </p>
+</main>
+
+<script>
+async function probe(url, el, ok, render) {
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    el.classList.add(ok(j) ? 'ok' : 'warn');
+    el.textContent = render(j);
+  } catch (e) {
+    el.classList.add('err');
+    el.textContent = 'unreachable';
+  }
+}
+const $h = document.getElementById('health');
+const $b = document.getElementById('bindings');
+const $m = document.getElementById('mcp');
+probe('/api/health', $h, j => j.ok, j => j.ok ? '✓ alive' : '✗ down');
+probe('/api/version', $b, j => true, j => {
+  const bits = [];
+  bits.push(j.hasState ? 'KV' : '–');
+  bits.push(j.hasDb ? 'D1' : '–');
+  bits.push(j.hasR2 ? 'R2' : '–');
+  bits.push(j.mcpKeyConfigured ? 'MCP-key' : 'no-MCP-key');
+  return bits.join(' · ');
+});
+probe('/api/mcp/status', $m, j => j.ok, j => j.ok ? `✓ tools/list responded (status ${j.status})` : `⚠ ${j.error || ('status ' + j.status)}`);
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "ohm-homes",
+  "version": "0.0.1",
+  "description": "Ohm.homes — Riket's internal AI command center on Cloudflare Workers. Serves the dashboard + thin API surface that proxies to Make MCP, Shopify, Gmail, etc.",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:dryrun": "wrangler deploy --dry-run",
+    "tail": "wrangler tail",
+    "kv:create": "wrangler kv namespace create STATE",
+    "d1:create": "wrangler d1 create ohm_internal"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "typescript": "^5.4.0",
+    "@cloudflare/workers-types": "^4.20260501.0"
+  }
+}

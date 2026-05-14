@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ohm-homes",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Custom domain: bound after first deploy via `wrangler deploy` then
+  // Cloudflare dashboard → Workers & Pages → ohm-homes → Settings → Triggers
+  // → Add Custom Domain → ohm.homes
+  // (Only works once the domain is on Cloudflare nameservers.)
+  "routes": [
+    // { "pattern": "ohm.homes", "custom_domain": true }
+  ]
+  // Bindings to add later (after first deploy + dashboard provisioning):
+  // "kv_namespaces": [{ "binding": "STATE", "id": "<from kv_namespace_create>" }],
+  // "d1_databases": [{ "binding": "DB", "database_name": "ohm_internal", "database_id": "<from d1_database_create>" }],
+  // "r2_buckets": [{ "binding": "ASSETS_R2", "bucket_name": "ohm-product-images" }]
+}
