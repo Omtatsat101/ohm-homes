@@ -74,6 +74,37 @@
     <p id="status" class="status" aria-live="polite"></p>
   </section>
   <section id="reader" class="reader" aria-live="polite"></section>
+  <section class="install-card" style="margin-top:32px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:24px 28px;">
+    <h2 style="margin:0 0 8px; font-weight:700; font-size:20px;">📚 Read text from any page in one click</h2>
+    <p style="margin:0 0 18px; color:var(--muted); font-size:15px;">Drag the button below to your browser's bookmarks bar. Then on any page: select text → click the bookmark → it opens here and reads it.</p>
+    <p style="margin:0 0 14px;">
+      <a href='javascript:(function()%7Bvar%20s%3Dwindow.getSelection().toString()%7C%7Cdocument.body.innerText%3Bif(!s.trim())%7Balert(%22Select%20some%20text%20first%22)%3Breturn%3B%7Dwindow.open(%22https%3A%2F%2Fohm.homes%2Fread%2F%3Ftext%3D%22%2BencodeURIComponent(s.trim().substring(0%2C2000))%2C%22_blank%22)%3B%7D)()%3B'
+         draggable="true"
+         style="display:inline-block; background:var(--accent); color:#fff; padding:12px 22px; border-radius:999px; font:700 15px 'Atkinson Hyperlegible',sans-serif; text-decoration:none; cursor:move;">🔊 Read this aloud</a>
+      <span style="margin-left:14px; color:var(--muted); font-size:13px;">← drag this to your bookmarks bar</span>
+    </p>
+    <details style="margin-top:14px;">
+      <summary style="cursor:pointer; font-weight:700; font-size:14px; color:var(--accent);">Step-by-step install</summary>
+      <ol style="margin-top:12px; padding-left:24px; color:var(--ink-soft); font-size:15px; line-height:1.8;">
+        <li>Make sure your <strong>bookmarks bar is visible</strong>. In Edge/Chrome: <kbd>Ctrl+Shift+B</kbd> toggles it.</li>
+        <li><strong>Drag</strong> the green "🔊 Read this aloud" button above and drop it onto the bookmarks bar.</li>
+        <li>On any web page, <strong>highlight some text</strong> (or just visit a page with text).</li>
+        <li>Click the bookmark. A new tab opens here with the text pre-loaded and reading.</li>
+        <li>If nothing is selected, the bookmark grabs the page's main text content (up to 2,000 characters).</li>
+      </ol>
+      <p style="margin-top:14px; font-size:13px; color:var(--muted); font-style:italic;">Works on Edge, Chrome, Firefox, Safari. URL length limits one click to ~2,000 characters — for longer documents, use the textarea above.</p>
+    </details>
+    <details style="margin-top:10px;">
+      <summary style="cursor:pointer; font-weight:700; font-size:14px; color:var(--accent);">Phone version (iOS / Android)</summary>
+      <p style="margin-top:12px; font-size:14px; color:var(--ink-soft);">Mobile browsers don't easily let you drag bookmarklets. Three options:</p>
+      <ul style="font-size:14px; color:var(--ink-soft); line-height:1.7;">
+        <li><strong>Share menu →</strong> highlight in any app → Share → your browser → paste into this page</li>
+        <li><strong>iOS Shortcut:</strong> create a Shortcut that takes "Selected Text" input and opens <code>ohm.homes/read/?text=[Input]</code>. Add to Action Button or Share Sheet.</li>
+        <li><strong>ElevenLabs Reader app:</strong> use the iOS/Android app with your existing ElevenLabs account. Better than this page on mobile, honestly.</li>
+      </ul>
+    </details>
+  </section>
+
 </main>
 <footer>Browser TTS works on Edge, Chrome, Safari. Higher-quality ElevenLabs voices unlock once the ohm.homes Worker is deployed with <code>ELEVENLABS_API_KEY</code> as a Worker secret.</footer>
 <script>
