@@ -18,7 +18,15 @@
   // (Only works once the domain is on Cloudflare nameservers.)
   "routes": [
     // { "pattern": "ohm.homes", "custom_domain": true }
-  ]
+  ],
+
+  // Cron triggers — runs scheduled() every 30 min to drain the application
+  // follow-up queue (Supabase application_followups). To disable temporarily,
+  // empty this array and `wrangler deploy`. The HTTP endpoints stay live.
+  "triggers": {
+    "crons": ["*/30 * * * *"]
+  }
+
   // Bindings to add later (after first deploy + dashboard provisioning):
   // "kv_namespaces": [{ "binding": "STATE", "id": "<from kv_namespace_create>" }],
   // "d1_databases": [{ "binding": "DB", "database_name": "ohm_internal", "database_id": "<from d1_database_create>" }],

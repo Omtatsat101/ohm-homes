@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Read aloud — ohm.homes</title>
+<meta name="description" content="Paste anything; hear it read aloud. Built for dyslexic-friendly listening." />
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1a1a1a;--ink-soft:#444;--muted:#6d635c;--paper:#faf8f3;--paper-alt:#f1ede4;--line:#d4cdb8;--highlight:#ffe48a;--accent:#1a3a2a;--accent-deep:#0d1f16;--saffron:#c96f32; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--paper); color:var(--ink); font-family:"Atkinson Hyperlegible",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:18px; line-height:1.7; letter-spacing:0.02em; -webkit-font-smoothing:antialiased; }
+  header.topbar { background:var(--accent); color:var(--paper); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; }
+  .brand { font-weight:700; letter-spacing:0.02em; }
+  .brand span { color:#b8860b; margin-right:6px; font-size:22px; }
+  header a { color:rgba(250,250,247,0.85); text-decoration:none; font-size:14px; }
+  header a:hover { color:#fff; }
+  .wrap { max-width:920px; margin:24px auto 64px; padding:0 24px; }
+  h1 { font-weight:700; font-size:28px; margin:0 0 8px; letter-spacing:-0.01em; }
+  .sub { color:var(--muted); font-size:16px; margin:0 0 22px; }
+  .input-card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(34,22,10,0.04); }
+  textarea#text { width:100%; min-height:160px; border:1px solid var(--line); border-radius:8px; padding:14px 16px; font-family:inherit; font-size:17px; line-height:1.7; color:var(--ink); background:var(--paper); resize:vertical; }
+  textarea#text:focus { outline:none; border-color:var(--saffron); box-shadow:0 0 0 3px rgba(201,111,50,0.15); }
+  .controls { display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  button.btn { background:var(--accent); color:#fff; border:0; padding:12px 22px; border-radius:999px; font:700 15px "Atkinson Hyperlegible",sans-serif; cursor:pointer; transition:background 0.15s; }
+  button.btn:hover { background:var(--accent-deep); }
+  button.btn[disabled] { background:var(--muted); cursor:not-allowed; }
+  button.btn.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
+  button.btn.ghost:hover { border-color:var(--saffron); color:var(--saffron); background:transparent; }
+  button.btn.danger { background:#c0392b; }
+  button.btn.danger:hover { background:#8b1f17; }
+  .control-group { display:flex; align-items:center; gap:6px; background:var(--paper-alt); border-radius:8px; padding:6px 10px; font-size:14px; }
+  .control-group label { color:var(--muted); font-weight:700; }
+  .control-group select, .control-group input[type="range"] { border:0; background:transparent; font:700 14px "Atkinson Hyperlegible",sans-serif; color:var(--ink); cursor:pointer; }
+  .control-group select:focus { outline:none; }
+  .reader { margin-top:22px; padding:28px 30px; background:#fff; border:1px solid var(--line); border-radius:12px; min-height:100px; font-size:22px; line-height:1.85; color:var(--ink-soft); }
+  .reader:empty::before { content:"Your text will appear here when you hit Play. The current word will be highlighted as it's spoken."; color:var(--muted); font-style:italic; }
+  .reader span.w { transition:background 0.1s, color 0.1s; padding:0 2px; border-radius:4px; }
+  .reader span.w.current { background:var(--highlight); color:var(--ink); font-weight:700; }
+  .reader span.w.done { color:var(--ink); }
+  .status { margin:14px 0 0; min-height:22px; font-size:14px; color:var(--muted); }
+  .status.is-error { color:#c0392b; font-weight:700; }
+  .status.is-ok { color:var(--accent); font-weight:700; }
+  .source-badge { display:inline-block; margin-left:8px; padding:2px 9px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:999px; }
+  .source-badge.browser { background:var(--paper-alt); color:var(--muted); border:1px solid var(--line); }
+  .source-badge.elevenlabs { background:#f3e8ff; color:#6b21a8; border:1px solid #6b21a8; }
+  footer { max-width:920px; margin:32px auto; padding:0 24px; color:var(--muted); font-size:13px; text-align:center; }
+  footer code { background:var(--paper-alt); border:1px solid var(--line); padding:1px 6px; border-radius:4px; font-size:12px; }
+  @media (max-width:600px) { .wrap { padding:0 16px; } h1 { font-size:24px; } .reader { font-size:19px; padding:20px; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span>ॐ</span> ohm.homes — read</div>
+  <a href="/">← home</a>
+</header>
+<main class="wrap">
+  <h1>Read aloud</h1>
+  <p class="sub">Paste anything. It reads it back, highlighting the current word as it goes. Built for dyslexic-friendly listening.</p>
+  <section class="input-card">
+    <textarea id="text" placeholder="Paste or type text here. Email, contract, web page, anything. Then hit Play below." autocomplete="off" spellcheck="false"></textarea>
+    <div class="controls">
+      <button id="play" class="btn">▶ Play</button>
+      <button id="pause" class="btn ghost" disabled>‖ Pause</button>
+      <button id="stop" class="btn danger" disabled>■ Stop</button>
+      <button id="paste-clip" class="btn ghost">📋 Paste</button>
+      <button id="clear" class="btn ghost">Clear</button>
+      <div class="control-group"><label for="voice">Voice</label><select id="voice"></select><span id="source-badge" class="source-badge browser">browser</span></div>
+      <div class="control-group"><label for="rate">Speed</label><input id="rate" type="range" min="0.5" max="2" step="0.1" value="1" /><span id="rate-val">1.0×</span></div>
+    </div>
+    <p id="status" class="status" aria-live="polite"></p>
+  </section>
+  <section id="reader" class="reader" aria-live="polite"></section>
+</main>
+<footer>Browser TTS works on Edge, Chrome, Safari. Higher-quality ElevenLabs voices unlock once the ohm.homes Worker is deployed with <code>ELEVENLABS_API_KEY</code> as a Worker secret.</footer>
+<script>
+(function(){
+  const $=(id)=>document.getElementById(id);
+  const textEl=$("text"),readerEl=$("reader"),playBtn=$("play"),pauseBtn=$("pause"),stopBtn=$("stop"),clearBtn=$("clear"),pasteBtn=$("paste-clip"),voiceSel=$("voice"),rateEl=$("rate"),rateValEl=$("rate-val"),statusEl=$("status"),srcBadge=$("source-badge");
+  let elevenAvailable=false,currentAudio=null,utterance=null,words=[];
+  fetch("/api/read/synthesize",{method:"OPTIONS"}).then(r=>{elevenAvailable=r.ok||r.status===405;refreshSource();}).catch(()=>{elevenAvailable=false;refreshSource();});
+  function refreshSource(){
+    if(elevenAvailable){srcBadge.textContent="ElevenLabs";srcBadge.className="source-badge elevenlabs";populateElevenVoices();}
+    else{srcBadge.textContent="browser";srcBadge.className="source-badge browser";populateBrowserVoices();}
+  }
+  function populateBrowserVoices(){
+    if(!("speechSynthesis" in window)){voiceSel.innerHTML="<option>not supported</option>";setStatus("Your browser doesn't support speech synthesis. Try Edge or Chrome.","error");playBtn.disabled=true;return;}
+    const fill=()=>{
+      const v=window.speechSynthesis.getVoices();if(!v.length)return;
+      const ranked=v.slice().sort((a,b)=>{const score=(x)=>(x.name.includes("Natural")?3:0)+(x.lang.startsWith("en")?2:0)+(x.default?1:0);return score(b)-score(a);});
+      voiceSel.innerHTML=ranked.map((vc,i)=>`<option value="${i}">${vc.name} — ${vc.lang}</option>`).join("");
+      window._voices=ranked;
+    };
+    fill();window.speechSynthesis.onvoiceschanged=fill;
+  }
+  const ELEVEN_DEFAULTS=[
+    {id:"21m00Tcm4TlvDq8ikWAM",name:"Rachel (warm, calm)"},
+    {id:"EXAVITQu4vr4xnSDxMaL",name:"Bella (clear, friendly)"},
+    {id:"pNInz6obpgDQGcFmaJgB",name:"Adam (deep, steady)"},
+    {id:"ErXwobaYiN019PkySvjV",name:"Antoni (versatile)"},
+    {id:"AZnzlk1XvdvUeBnXmlld",name:"Domi (strong, confident)"}
+  ];
+  function populateElevenVoices(){voiceSel.innerHTML=ELEVEN_DEFAULTS.map(v=>`<option value="${v.id}">${v.name}</option>`).join("");}
+  function splitWords(text){return(text||"").trim().split(/(\s+)/).filter(s=>s.length);}
+  function renderReader(text){words=splitWords(text);readerEl.innerHTML=words.map((w,i)=>/^\s+$/.test(w)?w:`<span class="w" data-i="${i}">${escapeHtml(w)}</span>`).join("");}
+  function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function highlightWordAt(charIndex){
+    let cumulative=0,wordSpans=readerEl.querySelectorAll("span.w"),target=null;
+    for(let i=0;i<words.length;i++){const w=words[i];if(charIndex<cumulative+w.length){if(!/^\s+$/.test(w))target=readerEl.querySelector(`span.w[data-i="${i}"]`);break;}cumulative+=w.length;}
+    wordSpans.forEach(s=>s.classList.remove("current"));
+    if(target){target.classList.add("current");const ti=parseInt(target.dataset.i,10);wordSpans.forEach(s=>{if(parseInt(s.dataset.i,10)<ti)s.classList.add("done");});const rect=target.getBoundingClientRect();if(rect.top<100||rect.bottom>window.innerHeight-100){target.scrollIntoView({behavior:"smooth",block:"center"});}}
+  }
+  function setStatus(msg,kind){statusEl.textContent=msg||"";statusEl.className="status"+(kind?" is-"+kind:"");}
+  async function play(){
+    const text=(textEl.value||"").trim();if(!text){setStatus("Paste or type something first.");return;}
+    stop();renderReader(text);playBtn.disabled=true;pauseBtn.disabled=false;stopBtn.disabled=false;setStatus("Reading…","ok");
+    if(elevenAvailable)await playEleven(text);else playBrowser(text);
+  }
+  function playBrowser(text){
+    if(!("speechSynthesis" in window)){setStatus("Speech synthesis not available.","error");return;}
+    utterance=new SpeechSynthesisUtterance(text);
+    const vList=window._voices||window.speechSynthesis.getVoices();const vIdx=parseInt(voiceSel.value,10);
+    if(!isNaN(vIdx)&&vList[vIdx])utterance.voice=vList[vIdx];
+    utterance.rate=parseFloat(rateEl.value)||1;
+    utterance.onboundary=(e)=>{if(e.name==="word")highlightWordAt(e.charIndex);};
+    utterance.onend=()=>{resetButtons();setStatus("Done.");};
+    utterance.onerror=(e)=>{resetButtons();setStatus("Speech error: "+e.error,"error");};
+    window.speechSynthesis.speak(utterance);
+  }
+  async function playEleven(text){
+    try{
+      const voiceId=voiceSel.value;
+      const res=await fetch("/api/read/synthesize",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({text,voice_id:voiceId,rate:parseFloat(rateEl.value)||1})});
+      if(!res.ok){const t=await res.text();throw new Error("Server "+res.status+": "+t.slice(0,200));}
+      const blob=await res.blob();currentAudio=new Audio(URL.createObjectURL(blob));currentAudio.playbackRate=parseFloat(rateEl.value)||1;
+      currentAudio.addEventListener("loadedmetadata",()=>{const duration=currentAudio.duration;const totalLen=text.length;currentAudio.addEventListener("timeupdate",()=>{const charIdx=Math.floor((currentAudio.currentTime/duration)*totalLen);highlightWordAt(charIdx);});});
+      currentAudio.addEventListener("ended",()=>{resetButtons();setStatus("Done.");});
+      currentAudio.addEventListener("error",()=>{resetButtons();setStatus("Audio playback error.","error");});
+      await currentAudio.play();
+    }catch(err){console.error(err);setStatus("ElevenLabs failed; falling back to browser TTS. "+err.message,"error");elevenAvailable=false;refreshSource();playBrowser(text);}
+  }
+  function pauseOrResume(){
+    if(currentAudio){if(currentAudio.paused){currentAudio.play();pauseBtn.textContent="‖ Pause";}else{currentAudio.pause();pauseBtn.textContent="▶ Resume";}}
+    else if(window.speechSynthesis){if(window.speechSynthesis.paused){window.speechSynthesis.resume();pauseBtn.textContent="‖ Pause";}else{window.speechSynthesis.pause();pauseBtn.textContent="▶ Resume";}}
+  }
+  function stop(){if(currentAudio){currentAudio.pause();currentAudio.src="";currentAudio=null;}if(window.speechSynthesis)window.speechSynthesis.cancel();resetButtons();readerEl.querySelectorAll("span.w").forEach(s=>s.classList.remove("current"));}
+  function resetButtons(){playBtn.disabled=false;pauseBtn.disabled=true;pauseBtn.textContent="‖ Pause";stopBtn.disabled=true;}
+  playBtn.addEventListener("click",play);pauseBtn.addEventListener("click",pauseOrResume);stopBtn.addEventListener("click",stop);
+  clearBtn.addEventListener("click",()=>{stop();textEl.value="";readerEl.innerHTML="";setStatus("");textEl.focus();});
+  pasteBtn.addEventListener("click",async()=>{try{const t=await navigator.clipboard.readText();textEl.value=t;setStatus("Pasted "+t.length+" characters.","ok");textEl.focus();}catch(err){setStatus("Couldn't read clipboard — paste manually with Ctrl+V.","error");}});
+  rateEl.addEventListener("input",()=>{rateValEl.textContent=parseFloat(rateEl.value).toFixed(1)+"×";if(currentAudio)currentAudio.playbackRate=parseFloat(rateEl.value)||1;});
+  populateBrowserVoices();
+  const params=new URLSearchParams(location.search);if(params.get("text")){textEl.value=params.get("text");setTimeout(play,300);}
+})();
+</script>
+</body>
+</html>

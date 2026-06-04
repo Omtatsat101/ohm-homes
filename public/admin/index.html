@@ -21,246 +21,73 @@
     --forest-deep: #0d1f16;
     --shadow-sm: 0 2px 8px rgba(34, 22, 10, 0.06);
     --shadow-md: 0 8px 24px rgba(34, 22, 10, 0.10);
-    --shadow-lg: 0 24px 60px rgba(34, 22, 10, 0.14);
     --radius: 14px;
-    --radius-lg: 22px;
     --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
     --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
   a { color: var(--saffron); text-decoration: none; }
   a:hover { color: var(--saffron-deep); }
 
-  header.topbar {
-    background: var(--forest);
-    color: var(--paper);
-    padding: 12px 24px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .brand {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--paper);
-    letter-spacing: 0.02em;
-  }
+  header.topbar { background: var(--forest); color: var(--paper); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; color: var(--paper); letter-spacing: 0.02em; }
   .brand-om { color: var(--gold); font-size: 22px; }
   .topbar-meta { font-family: var(--font-mono); font-size: 11.5px; color: rgba(250,250,247,0.7); letter-spacing: 0.06em; text-transform: uppercase; }
+  .topbar a { color: rgba(250,250,247,0.85); font-size: 12.5px; }
+  .topbar a:hover { color: #fff; }
 
-  /* Auth gate */
-  .gate-wrap {
-    max-width: 460px;
-    margin: 80px auto;
-    padding: 36px 32px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+  /* Auth-state banner */
+  .auth-banner {
+    background: var(--gold-light);
+    border-bottom: 1px solid var(--gold);
+    padding: 8px 24px;
     text-align: center;
-  }
-  .gate-wrap h1 {
-    font-family: var(--font-display);
-    font-size: 24px;
-    margin: 0 0 6px;
-  }
-  .gate-wrap p.sub {
-    color: var(--muted);
-    font-size: 14px;
-    margin: 0 0 22px;
-  }
-  .gate-form label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-    text-align: left;
-    margin-bottom: 14px;
-  }
-  .gate-form input {
-    display: block;
-    width: 100%;
-    margin-top: 6px;
-    padding: 11px 14px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    font-family: var(--font-body);
-    font-size: 15px;
-    background: var(--paper);
-    color: var(--ink);
-    letter-spacing: 0.04em;
-  }
-  .gate-form input:focus {
-    outline: none; border-color: var(--saffron);
-    box-shadow: 0 0 0 3px rgba(201, 111, 50, 0.15);
-  }
-  .gate-status {
-    min-height: 20px;
-    margin: 12px 0 0;
-    font-size: 13.5px;
+    font-size: 12.5px;
     color: var(--ink-soft);
   }
-  .gate-status.is-ok { color: var(--forest); font-weight: 600; }
-  .gate-status.is-error { color: #c0392b; font-weight: 600; }
+  .auth-banner code { font-family: var(--font-mono); background: #fff; border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-size: 11.5px; }
 
-  .btn {
-    display: inline-block;
-    padding: 11px 22px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid transparent;
-    text-decoration: none;
-    transition: all 0.15s ease;
-    font-family: var(--font-body);
-  }
-  .btn-primary { background: var(--forest); color: var(--paper); }
-  .btn-primary:hover { background: var(--forest-deep); color: var(--paper); }
-  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
-  .btn-ghost:hover { border-color: var(--saffron); color: var(--saffron); }
-
-  /* Admin panel */
-  .panel {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 32px 28px 64px;
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 32px;
-  }
-  nav.sidenav {
-    position: sticky;
-    top: 24px;
-    align-self: start;
-  }
-  nav.sidenav ul {
-    list-style: none;
-    padding: 0; margin: 0;
-  }
-  nav.sidenav li {
-    margin-bottom: 4px;
-  }
-  nav.sidenav a {
-    display: block;
-    padding: 8px 12px;
-    border-radius: 8px;
-    color: var(--ink);
-    font-size: 14px;
-    font-weight: 500;
-  }
-  nav.sidenav a:hover { background: var(--paper-alt); color: var(--ink); }
+  .panel { max-width: 1080px; margin: 0 auto; padding: 32px 28px 64px; display: grid; grid-template-columns: 220px 1fr; gap: 32px; }
+  nav.sidenav { position: sticky; top: 24px; align-self: start; }
+  nav.sidenav ul { list-style: none; padding: 0; margin: 0; }
+  nav.sidenav li { margin-bottom: 4px; }
+  nav.sidenav a { display: block; padding: 8px 12px; border-radius: 8px; color: var(--ink); font-size: 14px; font-weight: 500; }
+  nav.sidenav a:hover { background: var(--paper-alt); }
   nav.sidenav a.is-active { background: var(--forest); color: var(--paper); }
-  nav.sidenav .nav-section {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--saffron);
-    margin: 18px 0 6px;
-    padding: 0 12px;
-  }
+  nav.sidenav .nav-section { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--saffron); margin: 18px 0 6px; padding: 0 12px; }
 
-  section.card {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 26px 28px;
-    margin-bottom: 22px;
-    box-shadow: var(--shadow-sm);
-  }
-  section.card h2 {
-    font-family: var(--font-display);
-    font-size: 20px;
-    margin: 0 0 6px;
-  }
-  section.card p.sub {
-    color: var(--muted);
-    font-size: 14px;
-    margin: 0 0 18px;
-  }
+  section.card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 22px; box-shadow: var(--shadow-sm); }
+  section.card h2 { font-family: var(--font-display); font-size: 20px; margin: 0 0 6px; }
+  section.card .module-tag { display: inline-block; margin-left: 8px; vertical-align: middle; padding: 2px 9px; border-radius: 999px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  section.card p.sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
 
-  .edit-list {
-    list-style: none;
-    margin: 0; padding: 0;
-  }
-  .edit-list li {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--paper-alt);
-    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
-  }
+  .edit-list { list-style: none; margin: 0; padding: 0; }
+  .edit-list li { padding: 10px 0; border-bottom: 1px solid var(--paper-alt); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
   .edit-list li:last-child { border-bottom: none; }
-  .edit-list .el-label {
-    font-size: 14.5px;
-    color: var(--ink);
-    font-weight: 500;
-  }
-  .edit-list .el-path {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    color: var(--muted);
-  }
-  .edit-list a.el-go {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--saffron);
-    padding: 4px 12px;
-    border: 1px solid var(--saffron);
-    border-radius: 999px;
-    white-space: nowrap;
-    text-decoration: none;
-  }
+  .edit-list .el-label { font-size: 14.5px; color: var(--ink); font-weight: 500; }
+  .edit-list .el-path { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); }
+  .edit-list a.el-go { font-size: 13px; font-weight: 600; color: var(--saffron); padding: 4px 12px; border: 1px solid var(--saffron); border-radius: 999px; white-space: nowrap; }
   .edit-list a.el-go:hover { background: var(--saffron); color: #fff; }
 
-  .pill {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .pill-soon { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold); }
+  .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
   .pill-live { background: #e8f0eb; color: var(--forest); border: 1px solid var(--forest); }
+  .pill-soon { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold); }
+  .pill-mvp { background: #f3e8ff; color: #6b21a8; border: 1px solid #6b21a8; }
+  .pill-new { background: #fef3c7; color: #b45309; border: 1px solid #b45309; }
+  .pill-flag { background: #fee2e2; color: #b91c1c; border: 1px solid #b91c1c; }
 
-  .tip {
-    background: var(--gold-light);
-    border-left: 3px solid var(--gold);
-    padding: 12px 16px;
-    border-radius: 6px;
-    font-size: 13.5px;
-    color: var(--ink-soft);
-    margin-top: 14px;
-  }
-  .tip code {
-    font-family: var(--font-mono);
-    background: #fff;
-    border: 1px solid var(--line);
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    color: var(--saffron);
-  }
+  .keys-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .keys-table th, .keys-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--paper-alt); }
+  .keys-table th { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--saffron); }
+  .keys-table .ok { color: var(--forest); font-weight: 600; }
+  .keys-table .miss { color: #c0392b; font-weight: 600; }
+  .keys-table code { font-family: var(--font-mono); background: var(--paper-alt); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
 
-  footer {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 18px 28px 40px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12.5px;
-  }
+  footer { max-width: 1080px; margin: 0 auto; padding: 18px 28px 40px; text-align: center; color: var(--muted); font-size: 12.5px; }
+  .roadmap-link { display: block; margin-top: 14px; padding: 14px 18px; background: var(--gold-light); border-left: 3px solid var(--gold); border-radius: 6px; font-size: 14px; color: var(--ink-soft); }
+  .roadmap-link strong { color: var(--ink); }
 
   @media (max-width: 760px) {
     .panel { grid-template-columns: 1fr; padding: 18px; }
@@ -275,204 +102,176 @@
 
 <header class="topbar">
   <span class="brand"><span class="brand-om">ॐ</span> ohm.homes — admin</span>
-  <span class="topbar-meta">internal use only</span>
+  <span>
+    <span class="topbar-meta" id="auth-status">cloudflare access · worker auth</span>
+    &nbsp;·&nbsp;
+    <a href="/admin/logout">log out</a>
+  </span>
 </header>
 
-<!-- ─── Auth gate ─── -->
-<div id="gate" class="gate-wrap">
-  <h1>Admin</h1>
-  <p class="sub">Enter the admin password to continue.</p>
-  <form id="gate-form" class="gate-form" autocomplete="off">
-    <label>Password
-      <input type="password" id="gate-pw" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required />
-    </label>
-    <div style="display: flex; gap: 10px; justify-content: center;">
-      <button type="submit" class="btn btn-primary">Unlock</button>
-      <a href="/" class="btn btn-ghost">Cancel</a>
-    </div>
-    <p class="gate-status" id="gate-status" aria-live="polite"></p>
-  </form>
+<div class="auth-banner">
+  Real auth via Cloudflare Workers + Cloudflare Access. <code>ADMIN_PASSWORD</code> rotated via <code>wrangler secret put ADMIN_PASSWORD</code> &amp; redeploy.
 </div>
 
-<!-- ─── Admin panel ─── -->
-<main id="panel" class="panel" hidden>
+<main class="panel">
   <nav class="sidenav">
+    <span class="nav-section">Sites</span>
     <ul>
-      <li><a href="#sites" class="is-active">Sites</a></li>
-      <li><a href="#content">Content</a></li>
-      <li><a href="#systems">Systems</a></li>
-      <li><a href="#future">Coming soon</a></li>
+      <li><a href="#riketpatel" class="is-active">Riket personal</a></li>
+      <li><a href="#metta-realty">Metta Realty</a></li>
+      <li><a href="#metta-legacy">Metta Legacy</a></li>
+      <li><a href="#kiddie">Kiddie Commerce</a></li>
     </ul>
-    <span class="nav-section">Session</span>
+    <span class="nav-section">Operator platforms</span>
     <ul>
-      <li><a href="#" id="logout-link">Log out</a></li>
+      <li><a href="#vibeflippers">VibeFlippers</a></li>
+      <li><a href="#flipwala">FlipWala</a></li>
+    </ul>
+    <span class="nav-section">New products</span>
+    <ul>
+      <li><a href="#markets">Markets MVP</a></li>
+      <li><a href="#registry">Domain Registry</a></li>
+    </ul>
+    <span class="nav-section">Infra</span>
+    <ul>
+      <li><a href="#keys">API keys</a></li>
+      <li><a href="#data">Data &amp; analytics</a></li>
     </ul>
   </nav>
 
   <div>
 
-    <section class="card" id="sites">
-      <h2>Sites — edit on GitHub</h2>
-      <p class="sub">Each link opens the file in GitHub's web editor. Edit, scroll to "Commit changes", and GitHub Pages redeploys in ~60 seconds.</p>
+    <!-- ───────────────── RIKETPATEL.COM ───────────────── -->
+    <section class="card" id="riketpatel">
+      <h2>riketpatel.com <span class="pill pill-live module-tag">Live</span></h2>
+      <p class="sub">Personal portfolio, résumé, connect form. Public-facing.</p>
       <ul class="edit-list">
-        <li>
-          <span>
-            <span class="el-label">riketpatel.com — home page</span><br/>
-            <span class="el-path">Omtatsat101/riketpatel-site / index.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/index.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">riketpatel.com — connect page</span><br/>
-            <span class="el-path">connect/index.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/connect/index.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">riketpatel.com — main résumé</span><br/>
-            <span class="el-path">resume/view.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/resume/view.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">riketpatel.com — ADP résumé</span><br/>
-            <span class="el-path">resume/adp/index.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/resume/adp/index.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">riketpatel.com — Internet Archive résumé</span><br/>
-            <span class="el-path">resume/internet-archive/index.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/resume/internet-archive/index.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Metta Realty Partners — home</span><br/>
-            <span class="el-path">Omtatsat101/mettarealtypartners / index.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/mettarealtypartners/edit/main/index.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Metta Legacy Partners — home</span><br/>
-            <span class="el-path">Omtatsat101/mettalegacypartners-site / index.html</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/mettalegacypartners-site/edit/main/index.html" target="_blank" rel="noopener">Open editor →</a>
-        </li>
+        <li><span><span class="el-label">Home page</span><br/><span class="el-path">index.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/index.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Connect page</span><br/><span class="el-path">connect/index.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/connect/index.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Main résumé</span><br/><span class="el-path">resume/view.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/resume/view.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">ADP-targeted résumé</span><br/><span class="el-path">resume/adp/index.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/resume/adp/index.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Internet Archive résumé</span><br/><span class="el-path">resume/internet-archive/index.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/resume/internet-archive/index.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Recommendations / stories JSON</span><br/><span class="el-path">data/recommendations.json</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/data/recommendations.json" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Instagram feed JSON</span><br/><span class="el-path">data/instagram.json</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/data/instagram.json" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Site config</span><br/><span class="el-path">config.js</span></span><a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/config.js" target="_blank" rel="noopener">Edit →</a></li>
       </ul>
     </section>
 
-    <section class="card" id="content">
-      <h2>Content (JSON)</h2>
-      <p class="sub">Structured data the sites read at page load. Edit these JSON files to update the brag wall, the Instagram grid, etc., without touching HTML.</p>
+    <!-- ───────────────── METTA REALTY ───────────────── -->
+    <section class="card" id="metta-realty">
+      <h2>Metta Realty Partners <span class="pill pill-live module-tag">Live</span></h2>
+      <p class="sub">NJ residential and commercial real estate, HomeSmart affiliate. South Jersey / Greater Philadelphia.</p>
       <ul class="edit-list">
-        <li>
-          <span>
-            <span class="el-label">Recommendations &amp; stories</span><br/>
-            <span class="el-path">data/recommendations.json</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/data/recommendations.json" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Instagram feed</span><br/>
-            <span class="el-path">data/instagram.json</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/data/instagram.json" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-      </ul>
-      <div class="tip">
-        To add a new Instagram post: drop a JPG into <code>assets/instagram/</code> and add a 4-line entry to <code>data/instagram.json</code>. Site shows it on next reload.
-      </div>
-    </section>
-
-    <section class="card" id="systems">
-      <h2>Systems &amp; configuration</h2>
-      <p class="sub">Site-wide settings: passwords, GA4 ID, Web3Forms keys, theme tokens.</p>
-      <ul class="edit-list">
-        <li>
-          <span>
-            <span class="el-label">riketpatel.com config</span><br/>
-            <span class="el-path">config.js — passwords, IG handle, Web3Forms key, GA ID</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/riketpatel-site/edit/main/config.js" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Metta Realty config</span><br/>
-            <span class="el-path">config.js</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/mettarealtypartners/edit/main/config.js" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Metta Legacy config</span><br/>
-            <span class="el-path">config.js</span>
-          </span>
-          <a class="el-go" href="https://github.com/Omtatsat101/mettalegacypartners-site/edit/main/config.js" target="_blank" rel="noopener">Open editor →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Supabase — leads table</span><br/>
-            <span class="el-path">Form submissions captured here</span>
-          </span>
-          <a class="el-go" href="https://supabase.com/dashboard/project/doxmbwizpsyqruyrmffs/editor" target="_blank" rel="noopener">Open Supabase →</a>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Google Analytics 4</span><br/>
-            <span class="el-path">G-383FDKRG70</span>
-          </span>
-          <a class="el-go" href="https://analytics.google.com/" target="_blank" rel="noopener">Open GA →</a>
-        </li>
+        <li><span><span class="el-label">Home page</span><br/><span class="el-path">index.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/mettarealtypartners/edit/main/index.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Site config</span><br/><span class="el-path">config.js</span></span><a class="el-go" href="https://github.com/Omtatsat101/mettarealtypartners/edit/main/config.js" target="_blank" rel="noopener">Edit →</a></li>
       </ul>
     </section>
 
-    <section class="card" id="future">
-      <h2>Coming soon <span class="pill pill-soon">Roadmap</span></h2>
-      <p class="sub">Features I'll build into this admin once you give the green light — see <code style="font-family: var(--font-mono); font-size: 12px; background: var(--paper-alt); padding: 2px 6px; border-radius: 4px;">OHM-HOMES-ADMIN-CMS-PROPOSAL.md</code> for full scope.</p>
+    <!-- ───────────────── METTA LEGACY (FRANCHISE MODEL) ───────────────── -->
+    <section class="card" id="metta-legacy">
+      <h2>Metta Legacy Partners <span class="pill pill-new module-tag">Franchise rebuild</span></h2>
+      <p class="sub">
+        <strong>New direction:</strong> franchise model with an executive-concierge service for VibeFlippers + FlipWala operators.
+        Each franchisee runs the brokerage playbook + the concierge intake queue.
+        Public-facing site live; franchise operations + concierge intake admin pending build.
+      </p>
       <ul class="edit-list">
-        <li>
-          <span>
-            <span class="el-label">URL-paste card builder</span><br/>
-            <span class="el-path">Paste a link → fetches OG metadata → adds as card to a chosen page</span>
-          </span>
-          <span class="pill pill-soon">Soon</span>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Inline text editor</span><br/>
-            <span class="el-path">Edit hero copy / story text without leaving the admin</span>
-          </span>
-          <span class="pill pill-soon">Soon</span>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Image upload to Supabase Storage</span><br/>
-            <span class="el-path">Drag a photo here, get a URL the site reads</span>
-          </span>
-          <span class="pill pill-soon">Soon</span>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Make MCP toolbox dashboard</span><br/>
-            <span class="el-path">Trigger scenarios, view executions, manage data stores</span>
-          </span>
-          <span class="pill pill-soon">Soon</span>
-        </li>
-        <li>
-          <span>
-            <span class="el-label">Subscription ledger view</span><br/>
-            <span class="el-path">From projects/analysis/SUBSCRIPTION-LEDGER.md</span>
-          </span>
-          <span class="pill pill-soon">Soon</span>
-        </li>
+        <li><span><span class="el-label">Public site — home</span><br/><span class="el-path">index.html</span></span><a class="el-go" href="https://github.com/Omtatsat101/mettalegacypartners-site/edit/main/index.html" target="_blank" rel="noopener">Edit →</a></li>
+        <li><span><span class="el-label">Franchise operating manual</span><br/><span class="el-path">— to be built —</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">Concierge intake queue (Supabase)</span><br/><span class="el-path">— to be built —</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">Service catalog + fee schedule</span><br/><span class="el-path">— to be built —</span></span><span class="pill pill-soon">Pending</span></li>
       </ul>
+    </section>
+
+    <!-- ───────────────── KIDDIE COMMERCE ───────────────── -->
+    <section class="card" id="kiddie">
+      <h2>Kiddie Commerce <span class="pill pill-live module-tag">Live</span></h2>
+      <p class="sub">KiddieSketch (POD keepsake gifts), KiddieGo (active outdoor kids' gear). Operated on Shopify.</p>
+      <ul class="edit-list">
+        <li><span><span class="el-label">KiddieSketch store</span><br/><span class="el-path">Shopify-managed theme</span></span><a class="el-go" href="https://kiddiesketch.com" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">KiddieGo theme repo</span><br/><span class="el-path">Omtatsat101/kiddiego-shopify-theme</span></span><a class="el-go" href="https://github.com/Omtatsat101/kiddiego-shopify-theme" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">CustomSketch app</span><br/><span class="el-path">private Shopify app — POD engine</span></span><a class="el-go" href="https://github.com/Omtatsat101/customsketch-app" target="_blank" rel="noopener">Open →</a></li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── VIBEFLIPPERS ───────────────── -->
+    <section class="card" id="vibeflippers">
+      <h2>VibeFlippers <span class="pill pill-new module-tag">Operator platform</span></h2>
+      <p class="sub">Operator / flipper community + storefront flipping. Feeds Metta Legacy concierge.</p>
+      <ul class="edit-list">
+        <li><span><span class="el-label">Site repo</span><br/><span class="el-path">Omtatsat101/vibeflippers</span></span><a class="el-go" href="https://github.com/Omtatsat101/vibeflippers" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">Site Valuation Request flow → Metta Legacy concierge</span><br/><span class="el-path">— to be built —</span></span><span class="pill pill-soon">Pending</span></li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── FLIPWALA ───────────────── -->
+    <section class="card" id="flipwala">
+      <h2>FlipWala <span class="pill pill-new module-tag">Operator platform</span></h2>
+      <p class="sub">Flipping marketplace adjacency. Feeds Metta Legacy concierge.</p>
+      <ul class="edit-list">
+        <li><span><span class="el-label">Site repo</span><br/><span class="el-path">Omtatsat101/flipwala</span></span><a class="el-go" href="https://github.com/Omtatsat101/flipwala" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">Site Valuation Request flow → Metta Legacy concierge</span><br/><span class="el-path">— to be built —</span></span><span class="pill pill-soon">Pending</span></li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── PREDICTIVE MARKETS MVP ───────────────── -->
+    <section class="card" id="markets">
+      <h2>Predictive Market Trackers <span class="pill pill-mvp module-tag">MVP planned</span></h2>
+      <p class="sub">
+        Hourly snapshots of Polymarket + Kalshi prediction markets relevant to deal flow: rates, housing, small-business, macro.
+        Internal watchlist + sparklines. Curated by Riket; no AI prediction layer.
+      </p>
+      <ul class="edit-list">
+        <li><span><span class="el-label">Worker — markets/snapshot cron</span><br/><span class="el-path">src/markets.ts — to be built</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">Watchlist (Supabase / KV)</span><br/><span class="el-path">table: market_snapshots</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">UI — /admin/markets</span><br/><span class="el-path">public/admin/markets/index.html</span></span><span class="pill pill-soon">Pending</span></li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── DOMAIN REGISTRY ───────────────── -->
+    <section class="card" id="registry">
+      <h2>Domain Registry <span class="pill pill-mvp module-tag">Entry-point business</span></h2>
+      <p class="sub">
+        Reseller-path domain registrar competing with GoDaddy / Porkbun. Wholesale pricing → in-house registrations + site-flip margin.
+        See <code>projects/OHM-HOMES-STRATEGIC-ROADMAP.md</code> for the three paths (reseller / ICANN / acquire).
+      </p>
+      <ul class="edit-list">
+        <li><span><span class="el-label">Tucows OpenSRS reseller signup</span><br/><span class="el-path">opensrs.com/reseller</span></span><a class="el-go" href="https://opensrs.com/reseller-program/" target="_blank" rel="noopener">Sign up →</a></li>
+        <li><span><span class="el-label">Domain-search UI</span><br/><span class="el-path">public/registry/ — to be built</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">Stripe checkout</span><br/><span class="el-path">api/registry/checkout — to be built</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">DNS management UI</span><br/><span class="el-path">api/registry/dns/* — to be built</span></span><span class="pill pill-soon">Pending</span></li>
+        <li><span><span class="el-label">Migrate Riket's own domains from Porkbun</span><br/><span class="el-path">~25 domains</span></span><span class="pill pill-soon">Step 1 after reseller signup</span></li>
+      </ul>
+    </section>
+
+    <!-- ───────────────── API KEYS ───────────────── -->
+    <section class="card" id="keys">
+      <h2>API keys <span class="pill pill-live module-tag">Worker env vars</span></h2>
+      <p class="sub">
+        Keys live as Cloudflare Workers secrets — never in client JS, never in this page. The table below shows only key NAMES and last-4 characters for rotation-check purposes. To rotate: <code>npx wrangler secret put &lt;NAME&gt;</code> then <code>npm run deploy</code>.
+      </p>
+      <table class="keys-table">
+        <thead><tr><th>Key</th><th>Status</th><th>Tail</th><th>Purpose</th></tr></thead>
+        <tbody id="keys-tbody">
+          <tr><td colspan="4"><em>Loading from <code>/api/keys/list</code>…</em></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ───────────────── DATA & ANALYTICS ───────────────── -->
+    <section class="card" id="data">
+      <h2>Data &amp; analytics <span class="pill pill-live module-tag">External</span></h2>
+      <p class="sub">Where form submissions, lead data, and traffic analytics live.</p>
+      <ul class="edit-list">
+        <li><span><span class="el-label">Supabase — <code>leads</code> table</span><br/><span class="el-path">All form submissions land here</span></span><a class="el-go" href="https://supabase.com/dashboard/project/doxmbwizpsyqruyrmffs/editor" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">Google Analytics 4</span><br/><span class="el-path">G-383FDKRG70</span></span><a class="el-go" href="https://analytics.google.com/" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">Make MCP toolbox — Kiddie Brand</span><br/><span class="el-path">make.com team 2081617</span></span><a class="el-go" href="https://make.com" target="_blank" rel="noopener">Open →</a></li>
+        <li><span><span class="el-label">Make MCP probe</span><br/><span class="el-path">/api/mcp/status</span></span><a class="el-go" href="/api/mcp/status" target="_blank" rel="noopener">Probe →</a></li>
+      </ul>
+
+      <a class="roadmap-link" href="https://github.com/Omtatsat101/riketpatel-site/blob/main/../OHM-HOMES-STRATEGIC-ROADMAP.md" target="_blank" rel="noopener">
+        <strong>Strategic roadmap</strong> — the full vision (Metta franchise model, VibeFlippers/FlipWala concierge funnel, predictive markets MVP, domain registry play). Lives at <code>projects/OHM-HOMES-STRATEGIC-ROADMAP.md</code>.
+      </a>
     </section>
 
   </div>
@@ -484,67 +283,7 @@
 
 <script>
 (function () {
-  // Courtesy gate — same Admin137 default as before. Change in this file's
-  // CONFIG block, or move to Cloudflare Workers env var (env.ADMIN_PASSWORD)
-  // when you want real auth. Pre-auth, anyone reading source could see this.
-  var CONFIG = {
-    PASSWORD: "Admin137",
-    SESSION_KEY: "ohm_admin_unlocked"
-  };
-
-  var gate = document.getElementById("gate");
-  var panel = document.getElementById("panel");
-  var form = document.getElementById("gate-form");
-  var pwInput = document.getElementById("gate-pw");
-  var status = document.getElementById("gate-status");
-
-  function isUnlocked() {
-    try { return sessionStorage.getItem(CONFIG.SESSION_KEY) === "1"; }
-    catch (e) { return false; }
-  }
-  function setUnlocked(v) {
-    try {
-      if (v) sessionStorage.setItem(CONFIG.SESSION_KEY, "1");
-      else sessionStorage.removeItem(CONFIG.SESSION_KEY);
-    } catch (e) {}
-  }
-  function showPanel() {
-    gate.hidden = true;
-    panel.hidden = false;
-  }
-  function showGate() {
-    gate.hidden = false;
-    panel.hidden = true;
-    setTimeout(function () { pwInput.focus(); }, 50);
-  }
-
-  if (isUnlocked()) {
-    showPanel();
-  } else {
-    showGate();
-  }
-
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    if ((pwInput.value || "").trim() === CONFIG.PASSWORD) {
-      setUnlocked(true);
-      status.textContent = "Welcome.";
-      status.className = "gate-status is-ok";
-      setTimeout(showPanel, 400);
-    } else {
-      status.textContent = "That's not it.";
-      status.className = "gate-status is-error";
-      pwInput.select();
-    }
-  });
-
-  document.getElementById("logout-link").addEventListener("click", function (e) {
-    e.preventDefault();
-    setUnlocked(false);
-    showGate();
-  });
-
-  // Tiny sidenav active-link tracking
+  // Sidenav active-link tracking
   var navLinks = document.querySelectorAll("nav.sidenav a[href^='#']");
   navLinks.forEach(function (link) {
     link.addEventListener("click", function () {
@@ -552,6 +291,34 @@
       link.classList.add("is-active");
     });
   });
+
+  // Load API keys table from the Worker
+  fetch("/api/keys/list", { credentials: "include" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (!data || !data.keys) return;
+      var tbody = document.getElementById("keys-tbody");
+      var meta = {
+        ADMIN_PASSWORD: "Worker admin login (you're using it now)",
+        MAKE_MCP_KEY: "Make MCP toolbox auth",
+        SUPABASE_URL: "Supabase project URL",
+        SUPABASE_SERVICE_ROLE_KEY: "Supabase server-side (sensitive!)"
+      };
+      tbody.innerHTML = data.keys.map(function (k) {
+        return "<tr>" +
+          "<td><code>" + k.name + "</code></td>" +
+          "<td>" + (k.configured
+            ? "<span class='ok'>✓ configured</span>"
+            : "<span class='miss'>not set</span>") + "</td>" +
+          "<td>" + (k.tail || "—") + "</td>" +
+          "<td>" + (meta[k.name] || "—") + "</td>" +
+        "</tr>";
+      }).join("");
+    })
+    .catch(function () {
+      var tbody = document.getElementById("keys-tbody");
+      if (tbody) tbody.innerHTML = "<tr><td colspan='4'><em>Keys API unreachable. Worker may not be deployed yet.</em></td></tr>";
+    });
 })();
 </script>
 
