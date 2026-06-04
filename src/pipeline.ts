@@ -293,13 +293,63 @@ export async function handleProcessQueue(req: Request, env: PipelineEnv): Promis
 	return jsonResponse({ ok: true, ...result });
 }
 
+// Slack signing secret verification.
+// Slack signs every interactivity request with HMAC-SHA256 of `v0:{ts}:{body}` using
+// the signing secret. Reject if mismatch or timestamp older than 5 minutes (replay defense).
+async function verifySlackSignature(
+	req: Request,
+	rawBody: string,
+	signingSecret: string,
+): Promise<{ ok: boolean; reason?: string }> {
+	const ts = req.headers.get("x-slack-request-timestamp");
+	const sig = req.headers.get("x-slack-signature");
+	if (!ts || !sig) return { ok: false, reason: "missing signature headers" };
+
+	const tsNum = parseInt(ts, 10);
+	if (isNaN(tsNum)) return { ok: false, reason: "bad ts" };
+	const now = Math.floor(Date.now() / 1000);
+	if (Math.abs(now - tsNum) > 300) return { ok: false, reason: "timestamp too old (replay defense)" };
+
+	const baseString = `v0:${ts}:${rawBody}`;
+	const enc = new TextEncoder();
+	const key = await crypto.subtle.importKey(
+		"raw",
+		enc.encode(signingSecret),
+		{ name: "HMAC", hash: "SHA-256" },
+		false,
+		["sign"],
+	);
+	const sigBuf = await crypto.subtle.sign("HMAC", key, enc.encode(baseString));
+	const hexBytes = Array.from(new Uint8Array(sigBuf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+	const expected = `v0=${hexBytes}`;
+	// Constant-time compare
+	if (expected.length !== sig.length) return { ok: false, reason: "signature length mismatch" };
+	let diff = 0;
+	for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ sig.charCodeAt(i);
+	if (diff !== 0) return { ok: false, reason: "signature mismatch" };
+	return { ok: true };
+}
+
 export async function handleSlackInteract(req: Request, env: PipelineEnv): Promise<Response> {
 	if (req.method !== "POST") return jsonResponse({ error: "POST only" }, 405);
 
+	// Read raw body once for signature verification + form parsing
+	const rawBody = await req.text();
+
+	if (env.PIPELINE_INTERACT_SECRET) {
+		const verify = await verifySlackSignature(req, rawBody, env.PIPELINE_INTERACT_SECRET);
+		if (!verify.ok) {
+			console.warn(`[slack interact] signature verify failed: ${verify.reason}`);
+			return jsonResponse({ error: "Signature verification failed", reason: verify.reason }, 401);
+		}
+	} else {
+		console.warn("[slack interact] PIPELINE_INTERACT_SECRET not set — accepting unsigned requests");
+	}
+
 	// Slack sends interactivity as application/x-www-form-urlencoded with a payload field
-	const form = await req.formData();
-	const payloadStr = form.get("payload");
-	if (!payloadStr || typeof payloadStr !== "string") return jsonResponse({ error: "No payload" }, 400);
+	const params = new URLSearchParams(rawBody);
+	const payloadStr = params.get("payload");
+	if (!payloadStr) return jsonResponse({ error: "No payload" }, 400);
 
 	let payload: any;
 	try { payload = JSON.parse(payloadStr); } catch { return jsonResponse({ error: "Bad JSON" }, 400); }
@@ -327,10 +377,113 @@ export async function handleSlackInteract(req: Request, env: PipelineEnv): Promi
 	return jsonResponse({ ignored: true, action: action?.action_id });
 }
 
-// ── Scheduled (cron) handler ────────────────────────────────────────────────
+// ── 7-day check-in auto-queue ──────────────────────────────────────────────
+//
+// For each application_followups row where:
+//   - status = 'sent' (Riket clicked Mark sent, so the first follow-up went)
+//   - sent_at < (now - 7 days)
+//   - no later row for the same slug with template_id = 'default_7d_checkin' exists
+// Queue a new row with template_id = 'default_7d_checkin' and run_at = now()
+// so the next processQueue picks it up and posts a Slack card.
+//
+// Runs once per day. Avoids re-queueing if the check-in was already sent.
 
-export async function scheduledPipeline(env: PipelineEnv, ctx: ExecutionContext): Promise<void> {
+export async function enqueueCheckins(env: PipelineEnv): Promise<{ queued: number; errors: string[] }> {
+	if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+		throw new Error("Supabase env vars not configured");
+	}
+	const sevenDaysAgoIso = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
+	const nowIso = new Date().toISOString();
+
+	// Find sent rows older than 7 days
+	const sentRes = await supaFetch(
+		env,
+		`/application_followups?status=eq.sent&sent_at=lt.${encodeURIComponent(sevenDaysAgoIso)}&select=id,slug,company,role_title,recipient_name,recipient_email,submitted_at&limit=20`,
+		{ method: "GET" },
+	);
+	if (!sentRes.ok) throw new Error(`Supabase sent-rows fetch failed: ${sentRes.status}`);
+	const sentRows: Partial<FollowupRow>[] = await sentRes.json();
+	if (sentRows.length === 0) return { queued: 0, errors: [] };
+
+	const errors: string[] = [];
+	let queued = 0;
+
+	for (const row of sentRows) {
+		try {
+			if (!row.slug) continue;
+			// Skip if a 7d check-in already exists for this slug
+			const checkRes = await supaFetch(
+				env,
+				`/application_followups?slug=eq.${encodeURIComponent(row.slug)}&template_id=eq.default_7d_checkin&limit=1&select=id`,
+				{ method: "GET" },
+			);
+			if (!checkRes.ok) {
+				errors.push(`Dedup check failed for ${row.slug}: ${checkRes.status}`);
+				continue;
+			}
+			const existing = await checkRes.json();
+			if (Array.isArray(existing) && existing.length > 0) continue;
+
+			// Queue new check-in row
+			const newId = `${row.slug}__default_7d_checkin__${nowIso}`;
+			const newRow = {
+				id: newId,
+				slug: row.slug,
+				company: row.company,
+				role_title: row.role_title,
+				recipient_name: row.recipient_name,
+				recipient_email: row.recipient_email,
+				template_id: "default_7d_checkin",
+				submitted_at: row.submitted_at, // preserve original submission for narrative consistency
+				run_at: nowIso,                  // immediately eligible
+				status: "pending",
+				notes: "Auto-queued 7-day check-in by ohm-homes Worker",
+			};
+			const insertRes = await supaFetch(env, "/application_followups", {
+				method: "POST",
+				headers: { Prefer: "resolution=merge-duplicates" } as HeadersInit,
+				body: JSON.stringify(newRow),
+			});
+			if (!insertRes.ok) {
+				errors.push(`Insert failed for ${row.slug}: ${insertRes.status}`);
+				continue;
+			}
+			queued += 1;
+		} catch (e) {
+			errors.push(`Slug ${row.slug}: ${(e as Error).message}`);
+		}
+	}
+
+	return { queued, errors };
+}
+
+export async function handleEnqueueCheckins(req: Request, env: PipelineEnv): Promise<Response> {
+	if (req.method !== "POST" && req.method !== "GET") return jsonResponse({ error: "POST or GET" }, 405);
+	const result = await enqueueCheckins(env);
+	return jsonResponse({ ok: true, ...result });
+}
+
+// ── Scheduled (cron) handler ────────────────────────────────────────────────
+//
+// Two crons fire scheduledPipeline:
+//   - "*/30 * * * *" (every 30 min) — drains the pending queue
+//   - "15 9 * * *"   (daily at 09:15 UTC) — auto-queues 7-day check-ins
+// We branch on the cron expression to pick the right job.
+
+export async function scheduledPipeline(
+	env: PipelineEnv,
+	_ctx: ExecutionContext,
+	cron?: string,
+): Promise<void> {
 	try {
+		// Daily check-in cron
+		if (cron && cron.startsWith("15 9")) {
+			const result = await enqueueCheckins(env);
+			console.log(`[pipeline cron daily] check-ins queued=${result.queued} errors=${result.errors.length}`);
+			result.errors.forEach((e) => console.error(`[pipeline cron daily] ${e}`));
+			return;
+		}
+		// Default: 30-min queue processor
 		const result = await processQueue(env);
 		console.log(`[pipeline cron] processed=${result.processed} errors=${result.errors.length}`);
 		if (result.errors.length > 0) {

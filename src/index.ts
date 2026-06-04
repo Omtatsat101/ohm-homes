@@ -561,6 +561,10 @@ export default {
 			const { handleSlackInteract } = await importPipeline();
 			return handleSlackInteract(request, env);
 		}
+		if (url.pathname === "/api/pipeline/enqueue-checkins") {
+			const { handleEnqueueCheckins } = await importPipeline();
+			return handleEnqueueCheckins(request, env);
+		}
 
 		// Admin auth gate (applies to /admin/* and /api/admin/* and /api/mcp/*)
 		const isAdminPath =
@@ -591,10 +595,12 @@ export default {
 		return env.ASSETS.fetch(request);
 	},
 
-	// Scheduled cron handler — runs every 30 min per wrangler.jsonc triggers.crons
-	// Drains the Supabase application_followups queue, posts Slack cards, marks rows draft_created.
-	async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+	// Scheduled cron handler — runs at the cadences configured in wrangler.jsonc:
+	//   "*/30 * * * *"  → every 30 min, drains pending queue → Slack cards
+	//   "15 9 * * *"    → daily at 09:15 UTC, auto-queues 7-day check-ins
+	// The scheduledPipeline function branches on the cron expression.
+	async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
 		const { scheduledPipeline } = await importPipeline();
-		ctx.waitUntil(scheduledPipeline(env, ctx));
+		ctx.waitUntil(scheduledPipeline(env, ctx, controller.cron));
 	},
 };

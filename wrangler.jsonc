@@ -20,11 +20,16 @@
     // { "pattern": "ohm.homes", "custom_domain": true }
   ],
 
-  // Cron triggers — runs scheduled() every 30 min to drain the application
-  // follow-up queue (Supabase application_followups). To disable temporarily,
-  // empty this array and `wrangler deploy`. The HTTP endpoints stay live.
+  // Cron triggers — scheduled() in src/index.ts branches on controller.cron:
+  //   "*/30 * * * *"  → every 30 min, drains the application follow-up queue
+  //                     (Supabase application_followups) and posts Slack cards
+  //   "15 9 * * *"    → daily at 09:15 UTC (~5am ET / ~4am CT), auto-queues
+  //                     7-day check-ins for any application where sent_at is
+  //                     more than 7 days ago and no check-in row exists yet
+  // To disable temporarily, empty this array and `wrangler deploy`. The HTTP
+  // endpoints stay live for manual triggering.
   "triggers": {
-    "crons": ["*/30 * * * *"]
+    "crons": ["*/30 * * * *", "15 9 * * *"]
   }
 
   // Bindings to add later (after first deploy + dashboard provisioning):
