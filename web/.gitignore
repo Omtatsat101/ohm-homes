@@ -1,0 +1,12 @@
+# dependencies / build output (regenerable — never commit)
+node_modules/
+.next/
+.open-next/
+.wrangler/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# local env / secrets
+.env
+.env*.local
+.dev.vars

@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ohm-homes-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  // Public, client-safe values only. ohm.homes/web gets its OWN Supabase project
+  // — fill these in after creating it. Server-only secrets
+  // (SUPABASE_SERVICE_ROLE_KEY, etc.) are set with `wrangler secret put`, never here.
+  //
+  // NOTE: This is the NEXT.JS front-end Worker (ohm-homes-web). It is SEPARATE
+  // from the existing ohm.homes command-center Worker in the parent folder,
+  // which keeps its own wrangler.jsonc, crons, and the ohm.homes CNAME. Do not
+  // point this Worker at the ohm.homes apex until the cutover is planned.
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": ""
+  }
+}
