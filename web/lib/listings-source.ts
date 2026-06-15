@@ -41,7 +41,8 @@ export interface Listing {
  * real adapter exists, e.g.:
  *   const ACTIVE_SOURCE = process.env.LISTINGS_SOURCE ?? "mock";
  */
-const ACTIVE_SOURCE: "mock" | "simplyrets" | "rentcast" = "mock";
+const ACTIVE_SOURCE: "mock" | "simplyrets" | "rentcast" =
+  ((process.env.LISTINGS_SOURCE as "mock" | "simplyrets" | "rentcast") || "simplyrets");
 
 const MOCK_LISTINGS: Listing[] = [
   {
@@ -142,23 +143,61 @@ const MOCK_LISTINGS: Listing[] = [
   },
 ];
 
+// --- SimplyRETS adapter (RESO/MLS IDX) ---------------------------------------
+// Defaults to the SimplyRETS public DEMO feed (sample MLS data) so real listings
+// flow immediately. To show YOUR MLS listings, set SIMPLYRETS_API_KEY +
+// SIMPLYRETS_API_SECRET (from your SimplyRETS account connected to your MLS feed)
+// — no code change needed. btoa is used (Workers-native, no Node Buffer dep).
+const RETS_USER = process.env.SIMPLYRETS_API_KEY || "simplyrets";
+const RETS_PASS = process.env.SIMPLYRETS_API_SECRET || "simplyrets";
+
+function mapStatus(s?: string): Listing["status"] {
+  const v = (s || "").toLowerCase();
+  if (v.includes("pend") || v.includes("contract")) return "pending";
+  if (v.includes("clos") || v.includes("sold")) return "sold";
+  return "for-sale";
+}
+
+async function fetchFromSimplyRETS(): Promise<Listing[]> {
+  const auth = btoa(`${RETS_USER}:${RETS_PASS}`);
+  const res = await fetch("https://api.simplyrets.com/properties?limit=24", {
+    headers: { Authorization: `Basic ${auth}` },
+    next: { revalidate: 300 },
+  });
+  if (!res.ok) throw new Error(`SimplyRETS ${res.status}`);
+  const rows = (await res.json()) as any[];
+  return (rows || []).map((p, i) => ({
+    id: String(p.mlsId ?? p.listingId ?? `rets-${i}`),
+    address: p.address?.full ?? p.address?.streetName ?? "Address available on request",
+    city: p.address?.city ?? "",
+    state: p.address?.state ?? "",
+    zip: p.address?.postalCode ?? "",
+    price: Number(p.listPrice ?? 0),
+    beds: Number(p.property?.bedrooms ?? 0),
+    baths: Number(p.property?.bathsFull ?? 0) + 0.5 * Number(p.property?.bathsHalf ?? 0),
+    sqft: Number(p.property?.area ?? 0),
+    lat: Number(p.geo?.lat ?? 0),
+    lng: Number(p.geo?.lng ?? 0),
+    imageUrl: (Array.isArray(p.photos) && p.photos[0]) || "",
+    status: mapStatus(p.mls?.status),
+  }));
+}
+
 /**
- * The single data entry point for the app.
- *
- * Today: returns mock listings. Tomorrow: branch on `ACTIVE_SOURCE` to call a
- * real adapter and `return adapted;`. Always keep a mock fallback so the UI
- * renders even without credentials.
+ * The single data entry point for the app. Pulls live MLS/IDX listings via the
+ * active source; always falls back to mock so the UI renders even if the feed
+ * is down or unconfigured.
  */
 export async function getListings(): Promise<Listing[]> {
-  switch (ACTIVE_SOURCE) {
-    // case "simplyrets":
-    //   return fetchFromSimplyRETS();   // RESO/MLS — needs SIMPLYRETS_API_KEY/SECRET
-    // case "rentcast":
-    //   return fetchFromRentCast();     // interim — needs RENTCAST_API_KEY
-    case "mock":
-    default:
-      return MOCK_LISTINGS;
+  try {
+    if (ACTIVE_SOURCE === "simplyrets") {
+      const live = await fetchFromSimplyRETS();
+      if (live.length) return live;
+    }
+  } catch (e) {
+    console.error("getListings: live source failed, falling back to mock —", e);
   }
+  return MOCK_LISTINGS;
 }
 
 /** Convenience lookup for a future /listings/[id] detail page. */
