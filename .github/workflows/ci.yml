@@ -1,0 +1,53 @@
+name: ohm-homes CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  lint-html:
+    name: HTML syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check HTML files parse cleanly
+        run: |
+          python3 - <<'PYEOF'
+          import html.parser, glob, sys
+          class Checker(html.parser.HTMLParser):
+              pass
+          files = glob.glob("**/*.html", recursive=True)
+          ok = True
+          for path in files:
+              try:
+                  Checker().feed(open(path, encoding="utf-8", errors="ignore").read())
+                  print(f"OK: {path}")
+              except Exception as e:
+                  print(f"FAIL: {path}: {e}")
+                  ok = False
+          if not ok:
+              sys.exit(1)
+          print(f"Checked {len(files)} HTML file(s)")
+          PYEOF
+
+  lint-js:
+    name: JavaScript syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check JS files for syntax errors
+        run: |
+          FAIL=0
+          for f in $(find . -name "*.js" -not -path "./.git/*" -not -path "./node_modules/*"); do
+            node --check "$f" && echo "OK: $f" || { echo "FAIL: $f"; FAIL=1; }
+          done
+          [ $FAIL -eq 0 ] && echo "All JS files syntax-clean" || exit 1
