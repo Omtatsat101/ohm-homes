@@ -1,0 +1,14 @@
+[ui]
+landing = "chat"
+layout = "sanctum"
+mode = 0
+labels = "dual"
+theme = "dark"
+
+[layouts]
+available = ["sanctum", "operator", "mandala", "ritual"]
+
+[modes]
+1 = "create"
+0 = "preserve"
+-1 = "archive"

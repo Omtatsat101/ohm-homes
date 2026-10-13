@@ -1,0 +1,18 @@
+[voice]
+enabled = false
+start_in = "chat"
+push_to_talk = true
+wake_word = ""
+
+[stt]
+engine = "local"
+
+[tts]
+engine = "local"
+maya_connector = "elevenlabs"
+maya_voice_id = ""
+fallback = "local"
+
+[ritual]
+om_chant_on_first_launch = true
+om_chant_count = 108

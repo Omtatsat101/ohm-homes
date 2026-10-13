@@ -1,0 +1,70 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d0f14;
+  --panel: #151922;
+  --line: #262c3a;
+  --text: #e6e8ee;
+  --muted: #8a92a6;
+  --accent: #e0a64b;
+  --ok: #5cc98a;
+  --warn: #e0a64b;
+  --bad: #e06464;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button {
+  background: var(--accent); color: #111; border: 0; border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; font: inherit; margin-left: 6px;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+button.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, pre { font-family: "Cascadia Code", Consolas, monospace; }
+.shell { display: grid; grid-template-columns: 200px 1fr; height: 100vh; }
+.sidebar { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 12px 8px; }
+.brand { font-weight: 700; letter-spacing: 0.08em; padding: 4px 10px 16px; color: var(--accent); }
+.nav-item {
+  display: flex; flex-direction: column; align-items: flex-start; position: relative;
+  background: transparent; color: var(--text); margin: 0 0 2px; text-align: left; padding: 6px 10px;
+}
+.nav-item small { color: var(--muted); font-size: 11px; }
+.nav-item.active { background: #1f2533; box-shadow: inset 3px 0 0 var(--accent); }
+.badge { position: absolute; right: 8px; top: 8px; background: var(--bad); color: #fff; border-radius: 10px; padding: 0 6px; font-size: 11px; }
+.sidebar-foot { margin-top: auto; border-top: 1px solid var(--line); padding: 10px; font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+.dot::before { content: "\25CF  "; }
+.dot.ok::before { color: var(--ok); }
+.dot.warn::before { color: var(--warn); }
+.dot.bad::before { color: var(--bad); }
+.content { overflow: auto; padding: 20px 28px; display: flex; flex-direction: column; }
+.view-head { border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.view-head h1 { margin: 0 0 4px; font-size: 20px; }
+.wake { margin: 0 0 10px; color: var(--muted); font-style: italic; }
+.mode-create .wake { color: var(--accent); }
+.banner { background: #3a1f1f; border: 1px solid var(--bad); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; }
+.muted { color: var(--muted); }
+.chat { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.messages { flex: 1; overflow: auto; }
+.msg { margin-bottom: 14px; }
+.msg .who { color: var(--muted); font-size: 12px; }
+.msg.ohm .who { color: var(--accent); }
+.msg pre, .output { white-space: pre-wrap; margin: 4px 0 0 12px; }
+.output { background: var(--panel); border: 1px solid var(--line); padding: 10px; border-radius: 6px; margin: 12px 0 0; }
+.actions { margin: 6px 0 0 6px; }
+.composer { display: flex; gap: 6px; border-top: 1px solid var(--line); padding-top: 12px; }
+.composer input { flex: 1; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 10px; font: inherit; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.card h2 { font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+.list { list-style: none; padding: 0; margin: 0 0 16px; }
+.list li { padding: 8px 0; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.list small { color: var(--muted); flex-basis: 100%; }
+.tag { font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--muted); }
+.tag.allow, .tag.fresh { color: var(--ok); border-color: var(--ok); }
+.tag.approve, .tag.stale { color: var(--warn); border-color: var(--warn); }
+.tag.deny, .tag.missing { color: var(--bad); border-color: var(--bad); }
+.toggle { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+.audit { width: 100%; border-collapse: collapse; font-size: 13px; }
+.audit th, .audit td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); }
