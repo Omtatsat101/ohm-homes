@@ -1,0 +1,60 @@
+[runtime]
+host = "127.0.0.1"
+port = 8765
+allowed_origins = ["http://tauri.localhost", "https://tauri.localhost", "tauri://localhost", "http://localhost:1420", "http://127.0.0.1:1420"]
+data_dir = "{operator}/data"
+max_output_chars = 20000
+
+[paths]
+workspace = "~/OneDrive/Desktop/Organized"
+projects = "{workspace}/projects"
+primer = "{workspace}/primer.md"
+obsidian_vault = "{workspace}/projects/obsidian/Riket-Common-Brain"
+secrets_file = "{workspace}/projects/API-KEYS.env"
+
+[memory]
+# Read-only by default. With writes = true every write still goes through
+# permissions.policy."memory.write" (default "approve").
+writes = false
+max_note_bytes = 262144
+list_limit = 200
+
+[model]
+provider = "ollama"
+enabled = true
+endpoint = "http://127.0.0.1:11434"
+name = "llama3.1"
+timeout = 60
+system_prompt = "You are Ohm, a local-first operator. Be concise. You cannot run tools yourself; suggest /run commands instead."
+
+[onboarding]
+completed = false
+om_chant_count = 108
+
+[tools.git_status]
+description = "Git status for the ohm-homes repo"
+argv = ["git", "status", "--short", "--branch"]
+cwd = "{workspace}/projects/ohm-homes"
+
+[tools.git_log]
+description = "Recent commits for the ohm-homes repo"
+argv = ["git", "log", "--oneline", "-n", "15"]
+cwd = "{workspace}/projects/ohm-homes"
+
+[tools.open_folder]
+description = "Open an existing folder in Explorer"
+argv = ["explorer.exe"]
+extra_args = true
+max_args = 1
+arg_type = "dir"
+
+[tools.bridge_refresh]
+description = "Rebuild Claude/Codex safe-context bundles"
+argv = ["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", "{workspace}/projects/local-assist-bridge/build-safe-context.ps1"]
+cwd = "{workspace}/projects/local-assist-bridge"
+timeout = 300
+
+[tools.empty_recycle_bin]
+description = "Empty the Windows recycle bin"
+argv = ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", "Clear-RecycleBin -Force"]
+class = "destructive"

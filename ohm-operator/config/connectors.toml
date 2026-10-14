@@ -1,0 +1,64 @@
+# Outbound connectors are blocked unless enabled AND preauthorized AND the
+# host is listed in allowed_hosts. Secrets come from paths.secrets_file only.
+
+[bridge]
+enabled = true
+root = "{workspace}/projects/local-assist-bridge"
+refresh_script = "build-safe-context.ps1"
+refresh_tool = "bridge_refresh"
+stale_after_minutes = 720
+# Handoff folder layout: <handoff_dir>/<id>/{handoff.json, request.md, files/, reviews/}.
+# Point handoff_dir at the bridge's own inbox if it has one; keep it inside a trusted zone.
+handoff_dir = "{operator}/data/handoffs"
+file_roots = ["{workspace}/projects"]
+deny_globs = ["*.env", ".env*", "*.pem", "*.key", "*.pfx", "*.p12", "id_rsa*", "id_ed25519*", "*api-keys*"]
+max_files = 20
+max_file_bytes = 1048576
+max_request_chars = 20000
+
+[bridge.bundles]
+claude = "out/claude-safe-context.md"
+codex = "out/codex-safe-context.md"
+
+[connectors.local_fs]
+kind = "local"
+enabled = true
+
+[connectors.local_shell]
+kind = "local"
+enabled = true
+
+[connectors.obsidian]
+kind = "local"
+enabled = true
+
+[connectors.elevenlabs]
+kind = "outbound"
+enabled = false
+preauthorized = true
+allowed_hosts = ["api.elevenlabs.io"]
+secret_key = "ELEVENLABS_API_KEY"
+
+[connectors.notion]
+kind = "outbound"
+enabled = false
+preauthorized = false
+allowed_hosts = ["api.notion.com"]
+
+[connectors.ohm_homes_web]
+kind = "outbound"
+enabled = false
+preauthorized = false
+allowed_hosts = ["ohm.homes"]
+
+[connectors.gmail]
+kind = "outbound"
+enabled = false
+preauthorized = false
+allowed_hosts = ["gmail.googleapis.com"]
+
+[connectors.shopify]
+kind = "outbound"
+enabled = false
+preauthorized = false
+allowed_hosts = []

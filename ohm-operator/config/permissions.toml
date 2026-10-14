@@ -1,0 +1,18 @@
+# Decisions: "allow" | "approve" (explicit confirmation) | "deny".
+# Always-confirm classes (export.untrusted, destructive, message.send,
+# account.change, connector.unauthorized) can never be set to "allow".
+[policy]
+unknown = "deny"
+"tool.run" = "allow"
+"connector.unauthorized" = "deny"
+"export.untrusted" = "approve"
+destructive = "approve"
+"message.send" = "approve"
+"account.change" = "approve"
+"memory.write" = "approve"
+
+[export]
+trusted_zones = ["{workspace}/projects", "{operator}/data/exports", "{operator}/data/handoffs"]
+
+[approvals]
+expire_minutes = 60
