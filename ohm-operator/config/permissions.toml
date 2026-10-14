@@ -11,7 +11,7 @@ destructive = "approve"
 "account.change" = "approve"
 
 [export]
-trusted_zones = ["{workspace}/projects", "{operator}/data/exports"]
+trusted_zones = ["{workspace}/projects", "{operator}/data/exports", "{operator}/data/handoffs"]
 
 [approvals]
 expire_minutes = 60

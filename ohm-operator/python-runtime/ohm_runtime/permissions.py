@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from fnmatch import fnmatch
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -17,6 +18,7 @@ DEFAULT_POLICY = {
     "account.change": APPROVE,
 }
 FORBIDDEN_ARG_CHARS = ("\x00", "\n", "\r")
+DEFAULT_DENY_GLOBS = ["*.env", ".env*", "*.pem", "*.key", "*.pfx", "*.p12", "id_rsa*", "id_ed25519*", "*api-keys*"]
 
 
 @dataclass(frozen=True)
@@ -54,6 +56,13 @@ class PermissionGate:
         self.connectors = cfg.get("connectors", {}).get("connectors", {})
         zones = cfg.get("permissions", {}).get("export", {}).get("trusted_zones", [])
         self.trusted_zones = [resolve_path(cfg, z).resolve() for z in zones]
+        bridge = cfg.get("connectors", {}).get("bridge", {})
+        self.bridge_roots = [resolve_path(cfg, r).resolve() for r in bridge.get("file_roots", ["{workspace}/projects"])]
+        self.bridge_deny_globs = [g.lower() for g in bridge.get("deny_globs", DEFAULT_DENY_GLOBS)]
+        self.bridge_max_bytes = bridge.get("max_file_bytes", 1024 * 1024)
+        self.bridge_max_files = bridge.get("max_files", 20)
+        secrets = cfg.get("system", {}).get("paths", {}).get("secrets_file")
+        self.secrets_file = resolve_path(cfg, secrets).resolve() if secrets else None
 
     def decide(self, action: Action) -> Decision:
         handler = {
@@ -61,6 +70,8 @@ class PermissionGate:
             "connector.outbound": self._connector,
             "export": self._export,
             "model.local": self._model,
+            "bridge.handoff": self._bridge,
+            "bridge.review": self._bridge,
         }.get(action.kind)
         if handler:
             return handler(action)
@@ -110,6 +121,40 @@ class PermissionGate:
         if any(resolved.is_relative_to(z) for z in self.trusted_zones):
             return Decision(ALLOW, "export target is inside a trusted zone")
         return Decision(self.policy["export.untrusted"], "export target is outside trusted zones")
+
+    def bridge_file(self, value) -> tuple[Path | None, str]:
+        if not isinstance(value, str) or not value.strip() or any(c in value for c in FORBIDDEN_ARG_CHARS):
+            return None, "invalid file path"
+        path = Path(resolve(self.cfg, value.strip()))
+        if not path.is_absolute():
+            path = Path(resolve(self.cfg, "{workspace}")) / path
+        try:
+            real = path.resolve(strict=True)
+        except (OSError, RuntimeError):
+            return None, f"file not found: {value}"
+        if not real.is_file():
+            return None, f"not a regular file: {value}"
+        if not any(real.is_relative_to(r) for r in self.bridge_roots):
+            return None, f"{value} is outside the bridge file roots"
+        if real == self.secrets_file or any(fnmatch(real.name.lower(), g) for g in self.bridge_deny_globs):
+            return None, f"{value} looks like a secret and cannot be bridged"
+        if real.stat().st_size > self.bridge_max_bytes:
+            return None, f"{value} is larger than {self.bridge_max_bytes} bytes"
+        return real, ""
+
+    def _bridge(self, action: Action) -> Decision:
+        files = list(action.detail.get("files", []))
+        if action.detail.get("path"):
+            files.append(action.detail["path"])
+        if len(files) > self.bridge_max_files:
+            return Decision(DENY, f"at most {self.bridge_max_files} files per handoff")
+        for f in files:
+            _, reason = self.bridge_file(f)
+            if reason:
+                return Decision(DENY, reason)
+        if not action.detail.get("dest"):
+            return Decision(DENY, "bridge action has no destination")
+        return self._export(Action("export", action.detail["dest"]))
 
     def _model(self, action: Action) -> Decision:
         host = urlparse(action.detail.get("endpoint", "")).hostname or ""

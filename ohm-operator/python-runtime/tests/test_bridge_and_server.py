@@ -101,3 +101,20 @@ def test_server_rejects_bad_host_and_content_type(server):
     assert code == 403
     code, _, _ = call(f"{base}/chat", {"text": "/help"}, headers={"Content-Type": "text/plain"})
     assert code == 415
+
+
+def test_server_bridge_handoffs(server):
+    base, op = server
+    code, pending, _ = call(f"{base}/bridge/handoffs", {"target": "codex", "request": "check this"})
+    assert code == 200 and pending["status"] == "pending"
+    code, done, _ = call(f"{base}/approvals/{pending['approval_id']}", {"decision": "approve"})
+    hid = done["handoff"]["id"]
+    code, listed, _ = call(f"{base}/bridge/handoffs")
+    assert [h["id"] for h in listed] == [hid]
+    code, review, _ = call(f"{base}/bridge/reviews", {"handoff_id": hid, "reviewer": "codex", "text": "lgtm"})
+    assert review["status"] == "pending"
+    call(f"{base}/approvals/{review['approval_id']}", {"decision": "approve"})
+    code, reviews, _ = call(f"{base}/bridge/reviews?handoff={hid}")
+    assert [r["text"] for r in reviews] == ["lgtm"]
+    code, bad, _ = call(f"{base}/bridge/handoffs", {"target": "codex", "request": "x", "files": "a"})
+    assert bad["status"] == "invalid"

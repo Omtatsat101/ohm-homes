@@ -91,8 +91,12 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 "/tools": operator.runner.list_tools,
                 "/projects": operator.projects,
                 "/permissions": operator.permissions,
+                "/bridge/handoffs": operator.handoffs.list_handoffs,
                 "/health": lambda: {"ok": True},
             }
+            if url.path == "/bridge/reviews":
+                handoff = parse_qs(url.query).get("handoff", [None])[0]
+                return self._send(200, operator.handoffs.list_reviews(handoff))
             if url.path == "/audit":
                 try:
                     limit = int(parse_qs(url.query).get("limit", ["50"])[0])
@@ -116,6 +120,11 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 if not isinstance(text, str):
                     return self._send(400, {"error": "text must be a string"})
                 return self._send(200, operator.chat(text))
+            if path == "/bridge/handoffs":
+                return self._send(200, operator.handoffs.package(data.get("target"), data.get("request"), data.get("files") or []))
+            if path == "/bridge/reviews":
+                return self._send(200, operator.handoffs.record_review(
+                    data.get("handoff_id"), data.get("reviewer"), data.get("text"), data.get("path")))
             match = APPROVAL_PATH.match(path)
             if match:
                 decision = data.get("decision")

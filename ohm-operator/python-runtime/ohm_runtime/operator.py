@@ -9,6 +9,7 @@ from . import __version__
 from .audit import ApprovalQueue, AuditLog, Store
 from .bridge import BridgeConnector
 from .config import resolve_path
+from .handoff import HandoffStore
 from .permissions import Action, PermissionGate
 from .runner import ToolRunner
 
@@ -18,6 +19,10 @@ HELP = """Commands:
 /run <tool> [args] - run a tool through the permission gate
 /bridge - bridge bundle status
 /bridge refresh - rebuild bridge bundles
+/handoff <target> <request> [@file ...] - package a bridge handoff (files relative to workspace)
+/handoffs - list handoffs
+/review <handoff_id> <reviewer> <text | @file> - record a review output
+/reviews [handoff_id] - list reviews
 /approvals - pending approvals
 Anything else goes to the local model if it is available."""
 
@@ -35,6 +40,7 @@ class Operator:
         self.gate = PermissionGate(cfg)
         self.runner = ToolRunner(cfg, self.gate, self.audit, self.approvals)
         self.bridge = BridgeConnector(cfg)
+        self.handoffs = HandoffStore(cfg, self.gate, self.audit, self.approvals, self.bridge)
         self.model_cfg = system.get("model", {})
 
     def _path_state(self, key: str) -> dict:
@@ -107,8 +113,14 @@ class Operator:
         if not approve:
             self.audit.record(row["kind"], row["target"], "rejected", "rejected by user", {"approval_id": approval_id})
             return {"status": "rejected", "approval_id": approval_id}
+        d = row["detail"]
         if row["kind"] == "tool.run":
-            return self.runner.request(row["target"], row["detail"].get("args", []), approved_id=approval_id).to_dict()
+            return self.runner.request(row["target"], d.get("args", []), approved_id=approval_id).to_dict()
+        if row["kind"] == "bridge.handoff":
+            return self.handoffs.package(row["target"], d.get("request", ""), d.get("files", []), approved_id=approval_id)
+        if row["kind"] == "bridge.review":
+            return self.handoffs.record_review(row["target"], d.get("reviewer", ""), d.get("text"), d.get("path"),
+                                               approved_id=approval_id)
         self.audit.record(row["kind"], row["target"], "approved", "no executor for this action kind", {"approval_id": approval_id})
         return {"status": "error", "reason": f"no executor for {row['kind']}"}
 
@@ -118,6 +130,9 @@ class Operator:
             return {"kind": "error", "reply": "empty message"}
         if not text.startswith("/"):
             return self._ask_model(text)
+        head, _, rest = text.partition(" ")
+        if head.lower() in ("/handoff", "/review"):
+            return self._bridge_command(head.lower(), rest.split())
         try:
             parts = shlex.split(text, posix=os.name != "nt")
         except ValueError as exc:
@@ -142,11 +157,36 @@ class Operator:
             status = self.bridge.status()
             lines = [f"bridge: {status['state']}"] + [f"{b['name']}: {b['state']}" for b in status["bundles"]]
             return {"kind": "bridge", "reply": "\n".join(lines), "data": status}
+        if cmd == "/handoffs":
+            items = self.handoffs.list_handoffs()
+            lines = [f"{h['id']} -> {h['target']}: {h['request'][:60]} ({len(h['files'])} files, {h['reviews']} reviews)" for h in items]
+            return {"kind": "handoffs", "reply": "\n".join(lines) or "no handoffs", "data": items}
+        if cmd == "/reviews":
+            items = self.handoffs.list_reviews(args[0] if args else None)
+            lines = [f"{r['handoff_id']} {r['reviewer']}: {r['text'][:80]}" for r in items]
+            return {"kind": "reviews", "reply": "\n".join(lines) or "no reviews", "data": items}
         if cmd == "/run":
             if not args:
                 return {"kind": "error", "reply": "usage: /run <tool> [args]"}
             return self._run(args[0], args[1:])
         return {"kind": "error", "reply": f"unknown command {cmd}. Try /help"}
+
+    def _bridge_command(self, cmd: str, words: list[str]) -> dict:
+        files = [w[1:] for w in words if w.startswith("@") and len(w) > 1]
+        rest = [w for w in words if not w.startswith("@")]
+        if cmd == "/handoff":
+            if len(rest) < 2:
+                return {"kind": "error", "reply": "usage: /handoff <target> <request> [@file ...]"}
+            result = self.handoffs.package(rest[0], " ".join(rest[1:]), files)
+            ok = f"handoff {result['handoff']['id']} packaged at {result['handoff']['folder']}" if result["status"] == "ok" else ""
+        else:
+            if len(rest) < 2 or (len(rest) > 2) == bool(files) or len(files) > 1:
+                return {"kind": "error", "reply": "usage: /review <handoff_id> <reviewer> <text | @file>"}
+            text = None if files else " ".join(rest[2:])
+            result = self.handoffs.record_review(rest[0], rest[1], text, files[0] if files else None)
+            ok = f"review {result['review']['id']} recorded for {rest[0]}" if result["status"] == "ok" else ""
+        reply = ok or f"{result['status']}: {result['reason']}"
+        return {"kind": cmd[1:], "reply": reply, "data": result}
 
     def _run(self, tool: str, args: list[str]) -> dict:
         result = self.runner.request(tool, args).to_dict()

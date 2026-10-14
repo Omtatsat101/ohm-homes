@@ -7,6 +7,14 @@ root = "{workspace}/projects/local-assist-bridge"
 refresh_script = "build-safe-context.ps1"
 refresh_tool = "bridge_refresh"
 stale_after_minutes = 720
+# Handoff folder layout: <handoff_dir>/<id>/{handoff.json, request.md, files/, reviews/}.
+# Point handoff_dir at the bridge's own inbox if it has one; keep it inside a trusted zone.
+handoff_dir = "{operator}/data/handoffs"
+file_roots = ["{workspace}/projects"]
+deny_globs = ["*.env", ".env*", "*.pem", "*.key", "*.pfx", "*.p12", "id_rsa*", "id_ed25519*", "*api-keys*"]
+max_files = 20
+max_file_bytes = 1048576
+max_request_chars = 20000
 
 [bridge.bundles]
 claude = "out/claude-safe-context.md"

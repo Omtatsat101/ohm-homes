@@ -91,6 +91,42 @@ export interface Project {
   git: boolean;
 }
 
+export interface HandoffFile {
+  source: string;
+  copy: string;
+  bytes: number;
+  sha256: string;
+}
+
+export interface Handoff {
+  id: string;
+  created: string;
+  target: string;
+  request: string;
+  bundles: { name: string; path: string; state: BundleState; age_minutes: number | null }[];
+  files: HandoffFile[];
+  folder: string;
+  reviews: number;
+}
+
+export interface Review {
+  id: string;
+  handoff_id: string;
+  reviewer: string;
+  created: string;
+  source: string;
+  sha256: string;
+  text: string;
+}
+
+export interface BridgeResult {
+  status: "ok" | "pending" | "denied" | "invalid" | "error";
+  reason?: string;
+  approval_id?: string;
+  handoff?: Handoff;
+  review?: Review;
+}
+
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${SIDECAR_URL}${path}`, {
     method: body === undefined ? "GET" : "POST",
@@ -110,5 +146,12 @@ export const api = {
   tools: () => request<Tool[]>("/tools"),
   projects: () => request<Project[]>("/projects"),
   permissions: () => request<Permissions>("/permissions"),
+  handoffs: () => request<Handoff[]>("/bridge/handoffs"),
+  reviews: (handoff?: string) =>
+    request<Review[]>(`/bridge/reviews${handoff ? `?handoff=${encodeURIComponent(handoff)}` : ""}`),
+  createHandoff: (target: string, req: string, files: string[]) =>
+    request<BridgeResult>("/bridge/handoffs", { target, request: req, files }),
+  addReview: (handoff_id: string, reviewer: string, input: { text: string } | { path: string }) =>
+    request<BridgeResult>("/bridge/reviews", { handoff_id, reviewer, ...input }),
   audit: (limit = 25) => request<AuditEntry[]>(`/audit?limit=${limit}`),
 };

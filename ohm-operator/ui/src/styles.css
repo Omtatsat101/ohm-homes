@@ -68,3 +68,8 @@ code, pre { font-family: "Cascadia Code", Consolas, monospace; }
 .toggle { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
 .audit { width: 100%; border-collapse: collapse; font-size: 13px; }
 .audit th, .audit td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+.list li .output { flex-basis: 100%; margin: 4px 0 0; }
+.form { display: grid; gap: 8px; max-width: 640px; margin-bottom: 16px; }
+.form label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.form textarea, .form select { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: inherit; }
+.form button { justify-self: start; margin-left: 0; }
