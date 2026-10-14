@@ -20,6 +20,8 @@ The `ohm.homes` Worker shell at the repo root is untouched and unrelated to this
 | `python-runtime/ohm_runtime/operator.py` | Chat commands (`/help /status /tools /run /bridge /bridge refresh /handoff /handoffs /review /reviews /approvals`); free text goes to local Ollama if online, otherwise degrades visibly |
 | `python-runtime/main.py` | HTTP sidecar on `127.0.0.1` only (refuses non-loopback), Host + Origin allowlist, JSON-only POSTs |
 | `ui/` | Tauri 2 + React 19 + Vite + TypeScript shell, Sanctum layout, 8 nav views, Chat is the landing view |
+| `ui/src-tauri/src/sidecar.rs` | Tauri starts `python main.py` as a plain child process (no shell, no console window, output to `data/sidecar.log`) and kills it on quit; skips spawning if something already listens on the port. The webview gets no new capability |
+| `ui/src-tauri/src/main.rs` | System tray with Show / Hide / Quit |
 
 Safety defaults:
 - Every outbound connector ships `enabled = false`. Outbound is allowed only when a connector is enabled, `preauthorized = true`, and the host is in `allowed_hosts`. Otherwise `connector.unauthorized` applies (default `deny`).
@@ -51,10 +53,12 @@ python -m pytest
 # 3. UI (second terminal)
 cd ..\ui
 npm install
-npm run tauri dev           # desktop window
+npm run tauri dev           # desktop window; starts the sidecar itself if it is not already running
 npm run dev                 # or browser only, http://127.0.0.1:1420
 npm run tauri build         # NSIS/MSI installer
 ```
+
+Sidecar launch settings (environment variables, read by the Tauri app): `OHM_PYTHON` (default `python`), `OHM_OPERATOR_DIR` (default: the `ohm-operator` folder the app was built from), `OHM_SIDECAR_PORT` (default `8765`). The app runs the sidecar from the checkout, so an installer build still expects this folder and Python on the machine.
 
 If you change `runtime.port`, also update `connect-src` in `ui/src-tauri/tauri.conf.json` and set `VITE_SIDECAR_URL`.
 
@@ -63,6 +67,6 @@ If you change `runtime.port`, also update `connect-src` in `ui/src-tauri/tauri.c
 - Bridge bundle filenames in `connectors.toml` are placeholders until checked against the real `local-assist-bridge` output. The handoff folder layout is the operator's own; `handoff_dir` defaults to `data/handoffs` and is not yet matched to any inbox the bridge itself may use. Handoffs reference bundles (path + freshness), they do not copy them, and nothing is sent to Claude/Codex automatically.
 - Voice: engine paths in `voice.toml` are placeholders until whisper.cpp / piper are installed; set `tts.maya.voice_id`, add `ELEVENLABS_API_KEY` to the secrets file, and set `connectors.elevenlabs.enabled = true` to use Maya. Not verified here: real STT/TTS output and mic capture in WebView2 (tests use fake engines). No wake word; voice replies are not mirrored into the Chat view yet.
 - Maya TTS is the only outbound client. The gate decides for the others, but no client code exists for Notion/Gmail/etc.
-- Home summary, Projects status snapshots, Memory writes to Obsidian, admin config editing, tray, autostart, onboarding / 108 Om ritual, layout + mode switcher, Pretext motion.
-- The Tauri app does not spawn the sidecar. Start it yourself or set it up as a login task.
-- Not verified here: the Windows Tauri binary (`cargo`/`tauri build`). `tauri.conf.json` is validated against the CLI schema and `npm run build` passes.
+- Home summary, Projects status snapshots, Memory writes to Obsidian, admin config editing, autostart, onboarding / 108 Om ritual, layout + mode switcher, Pretext motion.
+- The sidecar is not bundled into the installer (no frozen Python); stopping it is a process kill, so no `runtime.stop` audit row is written on quit.
+- Not verified here: running the Windows Tauri binary (tray, sidecar spawn). `cargo check --target x86_64-pc-windows-msvc` passes, `tauri.conf.json` is validated against the CLI schema and `npm run build` passes.
