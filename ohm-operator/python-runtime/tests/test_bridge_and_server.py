@@ -118,3 +118,19 @@ def test_server_bridge_handoffs(server):
     assert [r["text"] for r in reviews] == ["lgtm"]
     code, bad, _ = call(f"{base}/bridge/handoffs", {"target": "codex", "request": "x", "files": "a"})
     assert bad["status"] == "invalid"
+
+
+def test_server_voice_endpoints(server):
+    base, _ = server
+    code, st, _ = call(f"{base}/voice/status")
+    assert code == 200 and st["enabled"] is False and st["stt"]["available"] is False
+    code, _, _ = call(f"{base}/voice/settings", {"enabled": "yes"})
+    assert code == 400
+    code, st, _ = call(f"{base}/voice/settings", {"enabled": True})
+    assert st["enabled"] is True
+    code, turn, _ = call(f"{base}/voice/turn", {"audio_base64": "eA=="})
+    assert turn["status"] == "invalid"
+    code, spoken, _ = call(f"{base}/voice/speak", {"text": "hi"})
+    assert spoken["status"] == "unavailable"
+    code, transcript, _ = call(f"{base}/voice/transcript")
+    assert transcript == []

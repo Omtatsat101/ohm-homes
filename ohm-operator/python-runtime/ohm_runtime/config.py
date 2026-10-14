@@ -29,6 +29,7 @@ def load_config(config_dir: str | Path | None = None) -> dict:
         except tomllib.TOMLDecodeError as exc:
             raise ConfigError(f"{path}: {exc}") from exc
     cfg["_operator_dir"] = str(directory.resolve().parent)
+    cfg["_config_dir"] = str(directory.resolve())
     validate(cfg)
     return cfg
 
@@ -51,6 +52,24 @@ def resolve(cfg: dict, value: str) -> str:
 
 def resolve_path(cfg: dict, value: str) -> Path:
     return Path(resolve(cfg, value))
+
+
+def read_secret(cfg: dict, key: str) -> str | None:
+    value = cfg.get("system", {}).get("paths", {}).get("secrets_file")
+    if not value or not key:
+        return None
+    try:
+        lines = resolve_path(cfg, value).read_text(encoding="utf-8-sig").splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        line = line.strip()
+        if line.startswith("export "):
+            line = line[7:].lstrip()
+        name, sep, val = line.partition("=")
+        if sep and name.strip() == key:
+            return val.strip().strip("'\"") or None
+    return None
 
 
 def validate(cfg: dict) -> None:

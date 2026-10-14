@@ -12,6 +12,7 @@ from .config import resolve_path
 from .handoff import HandoffStore
 from .permissions import Action, PermissionGate
 from .runner import ToolRunner
+from .voice import VoiceService
 
 HELP = """Commands:
 /status - operator status
@@ -41,6 +42,7 @@ class Operator:
         self.runner = ToolRunner(cfg, self.gate, self.audit, self.approvals)
         self.bridge = BridgeConnector(cfg)
         self.handoffs = HandoffStore(cfg, self.gate, self.audit, self.approvals, self.bridge)
+        self.voice = VoiceService(cfg, self.gate, self.audit)
         self.model_cfg = system.get("model", {})
 
     def _path_state(self, key: str) -> dict:
@@ -65,12 +67,12 @@ class Operator:
         return {"provider": m.get("provider"), "state": state, "name": m.get("name"), "endpoint": m.get("endpoint")}
 
     def status(self) -> dict:
-        voice = self.cfg.get("voice", {})
+        voice = self.voice.status()
         return {
             "version": __version__,
             "ui": self.cfg.get("ui", {}).get("ui", {}),
-            "voice": {"enabled": voice.get("voice", {}).get("enabled", False),
-                      "stt": voice.get("stt", {}).get("engine"), "tts": voice.get("tts", {}).get("engine")},
+            "voice": {"enabled": voice["enabled"], "stt": voice["stt"]["engine"], "tts": voice["tts"]["engine"],
+                      "stt_available": voice["stt"]["available"], "tts_available": voice["tts"]["available"]},
             "model": self.model_status(),
             "bridge": self.bridge.status(),
             "memory": {"primer": self._path_state("primer"), "obsidian_vault": self._path_state("obsidian_vault")},
@@ -170,6 +172,17 @@ class Operator:
                 return {"kind": "error", "reply": "usage: /run <tool> [args]"}
             return self._run(args[0], args[1:])
         return {"kind": "error", "reply": f"unknown command {cmd}. Try /help"}
+
+    def voice_turn(self, audio_b64: str) -> dict:
+        heard = self.voice.transcribe(audio_b64)
+        if heard["status"] != "ok":
+            return heard
+        if not heard["text"]:
+            return {**heard, "reply": None, "speech": None}
+        reply = self.chat(heard["text"])
+        self.voice.note("ohm", reply["reply"], reply["kind"])
+        speech = self.voice.speak(reply["reply"]) if self.voice.settings.get("speak_replies", True) else None
+        return {**heard, "reply": reply, "speech": speech}
 
     def _bridge_command(self, cmd: str, words: list[str]) -> dict:
         files = [w[1:] for w in words if w.startswith("@") and len(w) > 1]

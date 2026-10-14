@@ -73,3 +73,4 @@ code, pre { font-family: "Cascadia Code", Consolas, monospace; }
 .form label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
 .form textarea, .form select { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: inherit; }
 .form button { justify-self: start; margin-left: 0; }
+button.recording { background: var(--bad); color: #fff; }

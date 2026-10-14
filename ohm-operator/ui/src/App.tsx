@@ -34,7 +34,7 @@ export default function App() {
   const body = {
     home: <Home status={status} />,
     chat: <Chat onActivity={refresh} />,
-    voice: <Voice status={status} />,
+    voice: <Voice onActivity={refresh} />,
     projects: <Projects />,
     tools: <Tools onActivity={refresh} />,
     bridge: <Bridge status={status?.bridge ?? null} onActivity={refresh} />,

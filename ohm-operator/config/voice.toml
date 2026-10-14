@@ -1,17 +1,41 @@
+# Engines are local-first. "maya" is the only outbound engine and goes through
+# connectors.elevenlabs (disabled by default); its key is read from paths.secrets_file.
 [voice]
 enabled = false
 start_in = "chat"
 push_to_talk = true
 wake_word = ""
+transcript_size = 50
+max_audio_seconds = 120
+speak_replies = true
 
 [stt]
-engine = "local"
+engine = "whisper_cpp"
+
+[stt.whisper_cpp]
+binary = "{workspace}/tools/whisper.cpp/whisper-cli.exe"
+model = "{workspace}/tools/whisper.cpp/models/model.bin"
+language = "en"
+timeout = 120
 
 [tts]
-engine = "local"
-maya_connector = "elevenlabs"
-maya_voice_id = ""
-fallback = "local"
+engine = "sapi"
+fallback = "sapi"
+
+[tts.sapi]
+voice = ""
+timeout = 60
+
+[tts.piper]
+binary = "{workspace}/tools/piper/piper.exe"
+model = "{workspace}/tools/piper/voice.onnx"
+timeout = 60
+
+[tts.maya]
+connector = "elevenlabs"
+voice_id = ""
+model_id = ""
+timeout = 30
 
 [ritual]
 om_chant_on_first_launch = true

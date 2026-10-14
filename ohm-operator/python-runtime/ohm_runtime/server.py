@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 from .operator import Operator
 
 MAX_BODY = 64 * 1024
+MAX_AUDIO_BODY = 8 * 1024 * 1024
 APPROVAL_PATH = re.compile(r"^/approvals/([0-9a-f]{12})$")
 
 
@@ -49,12 +50,12 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 return False
             return True
 
-        def _json_body(self):
+        def _json_body(self, limit: int = MAX_BODY):
             if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
                 self._send(415, {"error": "content-type must be application/json"})
                 return None
             length = int(self.headers.get("Content-Length") or 0)
-            if length > MAX_BODY:
+            if length > limit:
                 self._send(413, {"error": "body too large"})
                 return None
             try:
@@ -92,6 +93,8 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 "/projects": operator.projects,
                 "/permissions": operator.permissions,
                 "/bridge/handoffs": operator.handoffs.list_handoffs,
+                "/voice/status": operator.voice.status,
+                "/voice/transcript": operator.voice.recent,
                 "/health": lambda: {"ok": True},
             }
             if url.path == "/bridge/reviews":
@@ -112,7 +115,7 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
             if not self._guard():
                 return
             path = urlparse(self.path).path
-            data = self._json_body()
+            data = self._json_body(MAX_AUDIO_BODY if path == "/voice/turn" else MAX_BODY)
             if data is None:
                 return
             if path == "/chat":
@@ -120,6 +123,14 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 if not isinstance(text, str):
                     return self._send(400, {"error": "text must be a string"})
                 return self._send(200, operator.chat(text))
+            if path == "/voice/settings":
+                if not isinstance(data.get("enabled"), bool):
+                    return self._send(400, {"error": "enabled must be a boolean"})
+                return self._send(200, operator.voice.set_enabled(data["enabled"]))
+            if path == "/voice/turn":
+                return self._send(200, operator.voice_turn(data.get("audio_base64")))
+            if path == "/voice/speak":
+                return self._send(200, operator.voice.speak(data.get("text")))
             if path == "/bridge/handoffs":
                 return self._send(200, operator.handoffs.package(data.get("target"), data.get("request"), data.get("files") or []))
             if path == "/bridge/reviews":

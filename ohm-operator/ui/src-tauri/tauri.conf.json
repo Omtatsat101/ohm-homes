@@ -22,7 +22,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:8765; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'; object-src 'none'; frame-src 'none'",
+      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:8765; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' data:; script-src 'self'; object-src 'none'; frame-src 'none'",
       "freezePrototype": true,
       "capabilities": ["main-window"]
     }

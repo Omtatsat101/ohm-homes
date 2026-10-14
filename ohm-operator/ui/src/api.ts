@@ -28,7 +28,7 @@ export interface PathState {
 export interface Status {
   version: string;
   ui: { landing?: string; layout?: string; mode?: number; labels?: string };
-  voice: { enabled: boolean; stt?: string; tts?: string };
+  voice: { enabled: boolean; stt?: string | null; tts?: string | null; stt_available?: boolean; tts_available?: boolean };
   model: { provider?: string; state: string; name?: string; endpoint?: string; reason?: string };
   bridge: BridgeStatus;
   memory: { primer: PathState; obsidian_vault: PathState };
@@ -127,6 +127,46 @@ export interface BridgeResult {
   review?: Review;
 }
 
+export interface EngineStatus {
+  engine: string | null;
+  available: boolean;
+  reason: string;
+}
+
+export interface VoiceStatus {
+  enabled: boolean;
+  push_to_talk: boolean;
+  speak_replies: boolean;
+  stt: EngineStatus;
+  tts: EngineStatus;
+  tts_fallback: EngineStatus | null;
+  warning?: string;
+}
+
+export interface Speech {
+  status: string;
+  reason?: string;
+  engine?: string;
+  mime?: string;
+  audio_base64?: string;
+  fallback_from?: string[] | null;
+}
+
+export interface VoiceTurn {
+  status: string;
+  reason?: string;
+  text?: string;
+  reply?: ChatReply | null;
+  speech?: Speech | null;
+}
+
+export interface TranscriptEntry {
+  ts: string;
+  role: "riket" | "ohm";
+  text: string;
+  engine: string | null;
+}
+
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${SIDECAR_URL}${path}`, {
     method: body === undefined ? "GET" : "POST",
@@ -153,5 +193,10 @@ export const api = {
     request<BridgeResult>("/bridge/handoffs", { target, request: req, files }),
   addReview: (handoff_id: string, reviewer: string, input: { text: string } | { path: string }) =>
     request<BridgeResult>("/bridge/reviews", { handoff_id, reviewer, ...input }),
+  voiceStatus: () => request<VoiceStatus>("/voice/status"),
+  voiceTranscript: () => request<TranscriptEntry[]>("/voice/transcript"),
+  setVoice: (enabled: boolean) => request<VoiceStatus>("/voice/settings", { enabled }),
+  voiceTurn: (audio_base64: string) => request<VoiceTurn>("/voice/turn", { audio_base64 }),
+  speak: (text: string) => request<Speech>("/voice/speak", { text }),
   audit: (limit = 25) => request<AuditEntry[]>(`/audit?limit=${limit}`),
 };
