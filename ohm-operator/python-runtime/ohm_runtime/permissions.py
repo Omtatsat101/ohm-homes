@@ -16,6 +16,7 @@ DEFAULT_POLICY = {
     "destructive": APPROVE,
     "message.send": APPROVE,
     "account.change": APPROVE,
+    "memory.write": APPROVE,
 }
 FORBIDDEN_ARG_CHARS = ("\x00", "\n", "\r")
 DEFAULT_DENY_GLOBS = ["*.env", ".env*", "*.pem", "*.key", "*.pfx", "*.p12", "id_rsa*", "id_ed25519*", "*api-keys*"]
@@ -72,6 +73,7 @@ class PermissionGate:
             "model.local": self._model,
             "bridge.handoff": self._bridge,
             "bridge.review": self._bridge,
+            "memory.write": self._memory,
         }.get(action.kind)
         if handler:
             return handler(action)
@@ -155,6 +157,11 @@ class PermissionGate:
         if not action.detail.get("dest"):
             return Decision(DENY, "bridge action has no destination")
         return self._export(Action("export", action.detail["dest"]))
+
+    def _memory(self, action: Action) -> Decision:
+        if not action.detail.get("enabled", False):
+            return Decision(DENY, "memory writes are disabled (system.memory.writes = false)")
+        return Decision(self.policy["memory.write"], "policy for memory.write")
 
     def _model(self, action: Action) -> Decision:
         host = urlparse(action.detail.get("endpoint", "")).hostname or ""

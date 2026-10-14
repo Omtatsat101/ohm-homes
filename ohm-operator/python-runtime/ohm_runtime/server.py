@@ -94,12 +94,17 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 "/permissions": operator.permissions,
                 "/bridge/handoffs": operator.handoffs.list_handoffs,
                 "/voice/status": operator.voice.status,
+                "/memory": operator.memory.overview,
                 "/voice/transcript": operator.voice.recent,
                 "/health": lambda: {"ok": True},
             }
             if url.path == "/bridge/reviews":
                 handoff = parse_qs(url.query).get("handoff", [None])[0]
                 return self._send(200, operator.handoffs.list_reviews(handoff))
+            if url.path == "/memory/notes":
+                return self._send(200, operator.memory.notes(parse_qs(url.query).get("q", [""])[0]))
+            if url.path == "/memory/note":
+                return self._send(200, operator.memory.read_note(parse_qs(url.query).get("path", [""])[0]))
             if url.path == "/audit":
                 try:
                     limit = int(parse_qs(url.query).get("limit", ["50"])[0])
@@ -131,6 +136,8 @@ def make_server(operator: Operator, host: str, port: int) -> ThreadingHTTPServer
                 return self._send(200, operator.voice_turn(data.get("audio_base64")))
             if path == "/voice/speak":
                 return self._send(200, operator.voice.speak(data.get("text")))
+            if path == "/memory/notes":
+                return self._send(200, operator.memory.write_note(data.get("path"), data.get("text"), data.get("mode", "append")))
             if path == "/bridge/handoffs":
                 return self._send(200, operator.handoffs.package(data.get("target"), data.get("request"), data.get("files") or []))
             if path == "/bridge/reviews":

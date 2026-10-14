@@ -12,6 +12,13 @@ primer = "{workspace}/primer.md"
 obsidian_vault = "{workspace}/projects/obsidian/Riket-Common-Brain"
 secrets_file = "{workspace}/projects/API-KEYS.env"
 
+[memory]
+# Read-only by default. With writes = true every write still goes through
+# permissions.policy."memory.write" (default "approve").
+writes = false
+max_note_bytes = 262144
+list_limit = 200
+
 [model]
 provider = "ollama"
 enabled = true

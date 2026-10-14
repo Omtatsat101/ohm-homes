@@ -54,22 +54,31 @@ def resolve_path(cfg: dict, value: str) -> Path:
     return Path(resolve(cfg, value))
 
 
-def read_secret(cfg: dict, key: str) -> str | None:
+def _secret_pairs(cfg: dict) -> list[tuple[str, str]]:
     value = cfg.get("system", {}).get("paths", {}).get("secrets_file")
-    if not value or not key:
-        return None
+    if not value:
+        return []
     try:
         lines = resolve_path(cfg, value).read_text(encoding="utf-8-sig").splitlines()
     except OSError:
-        return None
+        return []
+    pairs = []
     for line in lines:
         line = line.strip()
         if line.startswith("export "):
             line = line[7:].lstrip()
         name, sep, val = line.partition("=")
-        if sep and name.strip() == key:
-            return val.strip().strip("'\"") or None
-    return None
+        if sep and not name.lstrip().startswith("#"):
+            pairs.append((name.strip(), val.strip().strip("'\"")))
+    return pairs
+
+
+def read_secret(cfg: dict, key: str) -> str | None:
+    return next((v for k, v in _secret_pairs(cfg) if key and k == key and v), None)
+
+
+def read_secret_values(cfg: dict, min_length: int = 8) -> list[str]:
+    return [v for _, v in _secret_pairs(cfg) if len(v) >= min_length]
 
 
 def validate(cfg: dict) -> None:

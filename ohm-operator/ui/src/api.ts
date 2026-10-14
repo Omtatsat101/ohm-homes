@@ -167,6 +167,26 @@ export interface TranscriptEntry {
   engine: string | null;
 }
 
+export interface MemoryOverview {
+  primer: PathState & { bytes?: number; modified?: string; text?: string; truncated?: boolean };
+  vault: PathState & { writes_enabled: boolean; policy?: string };
+}
+
+export interface NoteInfo {
+  path: string;
+  bytes: number;
+  modified: string;
+}
+
+export interface NoteResult {
+  status: string;
+  reason?: string;
+  path?: string;
+  text?: string;
+  truncated?: boolean;
+  approval_id?: string;
+}
+
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${SIDECAR_URL}${path}`, {
     method: body === undefined ? "GET" : "POST",
@@ -198,5 +218,10 @@ export const api = {
   setVoice: (enabled: boolean) => request<VoiceStatus>("/voice/settings", { enabled }),
   voiceTurn: (audio_base64: string) => request<VoiceTurn>("/voice/turn", { audio_base64 }),
   speak: (text: string) => request<Speech>("/voice/speak", { text }),
+  memory: () => request<MemoryOverview>("/memory"),
+  notes: (q = "") => request<NoteInfo[]>(`/memory/notes?q=${encodeURIComponent(q)}`),
+  note: (path: string) => request<NoteResult>(`/memory/note?path=${encodeURIComponent(path)}`),
+  writeNote: (path: string, text: string, mode: "append" | "create") =>
+    request<NoteResult>("/memory/notes", { path, text, mode }),
   audit: (limit = 25) => request<AuditEntry[]>(`/audit?limit=${limit}`),
 };

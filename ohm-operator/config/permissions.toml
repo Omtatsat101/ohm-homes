@@ -9,6 +9,7 @@ unknown = "deny"
 destructive = "approve"
 "message.send" = "approve"
 "account.change" = "approve"
+"memory.write" = "approve"
 
 [export]
 trusted_zones = ["{workspace}/projects", "{operator}/data/exports", "{operator}/data/handoffs"]

@@ -134,3 +134,15 @@ def test_server_voice_endpoints(server):
     assert spoken["status"] == "unavailable"
     code, transcript, _ = call(f"{base}/voice/transcript")
     assert transcript == []
+
+
+def test_server_memory_endpoints(server):
+    base, _ = server
+    code, ov, _ = call(f"{base}/memory")
+    assert code == 200 and ov["primer"]["exists"] is False and ov["vault"]["writes_enabled"] is False
+    code, notes, _ = call(f"{base}/memory/notes?q=x")
+    assert notes == []
+    code, note, _ = call(f"{base}/memory/note?path=../x.md")
+    assert note["status"] == "invalid"
+    code, write, _ = call(f"{base}/memory/notes", {"path": "a.md", "text": "x"})
+    assert write["status"] == "invalid"

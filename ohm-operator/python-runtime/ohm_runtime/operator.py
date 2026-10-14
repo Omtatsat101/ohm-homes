@@ -10,6 +10,7 @@ from .audit import ApprovalQueue, AuditLog, Store
 from .bridge import BridgeConnector
 from .config import resolve_path
 from .handoff import HandoffStore
+from .memory import Memory
 from .permissions import Action, PermissionGate
 from .runner import ToolRunner
 from .voice import VoiceService
@@ -24,6 +25,10 @@ HELP = """Commands:
 /handoffs - list handoffs
 /review <handoff_id> <reviewer> <text | @file> - record a review output
 /reviews [handoff_id] - list reviews
+/primer - show primer.md
+/notes [query] - list Obsidian notes
+/note <path> - show a note
+/remember <path> <text> - append to a note (writes are off by default and gated)
 /approvals - pending approvals
 Anything else goes to the local model if it is available."""
 
@@ -43,6 +48,7 @@ class Operator:
         self.bridge = BridgeConnector(cfg)
         self.handoffs = HandoffStore(cfg, self.gate, self.audit, self.approvals, self.bridge)
         self.voice = VoiceService(cfg, self.gate, self.audit)
+        self.memory = Memory(cfg, self.gate, self.audit, self.approvals)
         self.model_cfg = system.get("model", {})
 
     def _path_state(self, key: str) -> dict:
@@ -120,6 +126,8 @@ class Operator:
             return self.runner.request(row["target"], d.get("args", []), approved_id=approval_id).to_dict()
         if row["kind"] == "bridge.handoff":
             return self.handoffs.package(row["target"], d.get("request", ""), d.get("files", []), approved_id=approval_id)
+        if row["kind"] == "memory.write":
+            return self.memory.write_note(row["target"], d.get("text"), d.get("mode", "append"), approved_id=approval_id)
         if row["kind"] == "bridge.review":
             return self.handoffs.record_review(row["target"], d.get("reviewer", ""), d.get("text"), d.get("path"),
                                                approved_id=approval_id)
@@ -135,6 +143,16 @@ class Operator:
         head, _, rest = text.partition(" ")
         if head.lower() in ("/handoff", "/review"):
             return self._bridge_command(head.lower(), rest.split())
+        if head.lower() == "/remember":
+            path, _, note = rest.strip().partition(" ")
+            if not path or not note.strip():
+                return {"kind": "error", "reply": "usage: /remember <path> <text>"}
+            result = self.memory.write_note(path, note.strip())
+            reply = f"appended to {path}" if result["status"] == "ok" else f"{result['status']}: {result['reason']}"
+            return {"kind": "memory", "reply": reply, "data": result}
+        if head.lower() == "/note":
+            result = self.memory.read_note(rest.strip())
+            return {"kind": "memory", "reply": result.get("text") or f"{result['status']}: {result.get('reason')}", "data": result}
         try:
             parts = shlex.split(text, posix=os.name != "nt")
         except ValueError as exc:
@@ -167,6 +185,12 @@ class Operator:
             items = self.handoffs.list_reviews(args[0] if args else None)
             lines = [f"{r['handoff_id']} {r['reviewer']}: {r['text'][:80]}" for r in items]
             return {"kind": "reviews", "reply": "\n".join(lines) or "no reviews", "data": items}
+        if cmd == "/primer":
+            primer = self.memory.overview()["primer"]
+            return {"kind": "memory", "reply": primer.get("text") or f"primer not found at {primer['path']}", "data": primer}
+        if cmd == "/notes":
+            notes = self.memory.notes(" ".join(args))
+            return {"kind": "memory", "reply": "\n".join(n["path"] for n in notes) or "no notes", "data": notes}
         if cmd == "/run":
             if not args:
                 return {"kind": "error", "reply": "usage: /run <tool> [args]"}

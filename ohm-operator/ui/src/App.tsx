@@ -38,7 +38,7 @@ export default function App() {
     projects: <Projects />,
     tools: <Tools onActivity={refresh} />,
     bridge: <Bridge status={status?.bridge ?? null} onActivity={refresh} />,
-    memory: <Memory status={status} />,
+    memory: <Memory onActivity={refresh} />,
     permissions: <PermissionsView onActivity={refresh} />,
   }[view];
 
